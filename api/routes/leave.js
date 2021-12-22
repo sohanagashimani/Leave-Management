@@ -8,7 +8,7 @@ router.post("/", async (req, res) => {
       userId: req.body.userId,
       subject: req.body.subject,
       department: req.body.department,
-      isSick: req.body.isSick,
+      type: req.body.type,
       body: req.body.body,
       byStaff: req.body.byStaff,
       byHod: req.body.byHod,
@@ -89,7 +89,7 @@ router.put("/:leaveId/:byStaff/:role/:leaveCount", async (req, res) => {
       const leaveStatus = await Leave.findById(req.params.leaveId);
       const userId = await leaveStatus.userId;
       const user = await Staff.findById(userId);
-      if (leaveStatus.byHod === 1) {
+      if (leaveStatus.byHod === 1 && leaveStatus.type !== "Duty") {
         if (user.type === "Regular") {
           const updatedLeaves = user.regularStaffLeaves - req.params.leaveCount;
           // console.log(updatedLeaves)

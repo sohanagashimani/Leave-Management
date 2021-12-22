@@ -5,7 +5,7 @@ const LeaveSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    name:{
+    name: {
       type: String,
       required: true,
     },
@@ -18,11 +18,10 @@ const LeaveSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    isSick: {
-      type: Boolean,
-      default: false,
+    type: {
+      type: String,
     },
-    
+
     body: {
       type: String,
       required: true,
@@ -47,7 +46,6 @@ const LeaveSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-
   },
   {
     timestamps: true,
