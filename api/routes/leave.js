@@ -46,11 +46,18 @@ router.get("/staff/:staffname", async (req, res) => {
   }
 });
 
-// get all leave requests(principal)
+// get hod leave requests(admin)
 router.get("/", async (req, res) => {
   try {
-    const leave = await Leave.find({ byHod: 1 });
-    res.status(200).json(leave);
+    const user = await Staff.find({ role: "Hod" });
+
+    const reqForAdmin = await Promise.all(
+      user.map((i) => {
+        return Leave.find({ userId: i._id, byStaff: 1 });
+      })
+    );
+
+    res.status(200).json(reqForAdmin[0]);
   } catch (err) {
     return res.status(500).json(err);
   }
