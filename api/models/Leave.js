@@ -21,7 +21,6 @@ const LeaveSchema = new mongoose.Schema(
     type: {
       type: String,
     },
-
     body: {
       type: String,
       required: true,
@@ -45,6 +44,13 @@ const LeaveSchema = new mongoose.Schema(
     byHod: {
       type: Number,
       default: 0,
+    },
+    byAdmin: {
+      type: Number,
+      default: 0,
+    },
+    noOfDays: {
+      type: Number
     },
   },
   {

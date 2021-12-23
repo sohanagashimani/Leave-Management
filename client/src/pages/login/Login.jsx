@@ -24,13 +24,14 @@ function Login() {
     e.preventDefault();
     await login(user);
     const localUserDetails = JSON.parse(localStorage.getItem("storedUser"));
+
     if (localUserDetails.success) {
-      const userDets = localUserDetails.user;
-      if (userDets.role === "Staff" || userDets.role === "Hod") {
+      const userDets = localUserDetails?.user;
+      if (userDets?.role === "Staff" || userDets?.role === "Hod") {
         navigate("/");
-      } else if (userDets.role === "Principal") {
+      } else if (userDets?.role === "Principal") {
         navigate("/principal");
-      } else if (userDets.isAdmin) {
+      } else if (userDets?.role === "Admin") {
         navigate("/admin");
       }
     } else {

@@ -1,4 +1,6 @@
-earned leave
+earned leave bakend (done)
 populate leave remaining
-separate pages in navbar
-admin and principal separation.
+separate pages in navbar(done)
+admin and principal separation.(done)
+check leaves remaining
+principal page

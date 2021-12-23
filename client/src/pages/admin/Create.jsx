@@ -5,7 +5,6 @@ import { useContext } from "react";
 import LeaveContext from "../../context/LeaveContext";
 import DeleteOutlineTwoToneIcon from "@mui/icons-material/DeleteOutlineTwoTone";
 import { useNavigate } from "react-router-dom";
-import NavBar from "../../components/NavBar";
 
 function Create() {
   const [userChange, setuserChange] = useState(false);
@@ -14,9 +13,10 @@ function Create() {
   const { getusers, userArr, deleteUser } = userContext;
 
   const navigate = useNavigate();
-
+  const localUserDetails = JSON.parse(localStorage.getItem("storedUser"));
+  const userDets = localUserDetails?.user;
   useEffect(() => {
-    if (!localStorage.getItem("storedUser")) {
+    if (userDets?.role !== "Admin" || localUserDetails === null) {
       navigate("/login");
     }
     // eslint-disable-next-line
@@ -54,7 +54,6 @@ function Create() {
   // console.log(user,"userrr");
   return (
     <>
-      <NavBar />
       <div className="container my-5">
         <h1>Create a new staff member</h1>
         <hr />
@@ -158,6 +157,7 @@ function Create() {
                   <option value="Hod">Hod</option>
                   <option value="Staff">Staff</option>
                   <option value="Principal">Principal</option>
+                  <option value="Admin">Admin</option>
                 </Form.Select>
               </FloatingLabel>
             </Col>

@@ -28,7 +28,6 @@ router.post("/register", async (req, res) => {
       department: req.body.department,
       type: req.body.type,
       joiningDate: dt,
-      isAdmin: req.body.isAdmin,
     });
     // console.log(newUser);
     // save user and send response
@@ -43,7 +42,7 @@ router.post("/register", async (req, res) => {
 // Login
 router.post("/login", async (req, res) => {
   try {
-    const user = await Staff.findOne({
+    let user = await Staff.findOne({
       email: req.body.email,
     });
     if (!user) {
@@ -73,20 +72,14 @@ router.post("/login", async (req, res) => {
         await Staff.findByIdAndUpdate(user._id, {
           probationStaffLeaves: probationLeaves,
         });
+        user = await Staff.findOne({
+          email: req.body.email,
+        });
         return res.status(200).json({ user, success: true });
       }
+    } else {
+      return res.status(200).json({ user, success: true });
     }
-    // Todo
-    //  else {
-    //   const joiningYear = user.joiningDate.getFullYear();
-    //   const currentYear = new Date().getFullYear();
-    //   if(joiningYear!==currentYear){
-    //   }
-    //   await findByIdAndUpdate(user._id, {
-    //     regularStaffLeaves: updatedLeaves,
-    //   });
-    // }
-    res.status(200).json({ user, success: true });
   } catch (err) {
     res.status(500).json(err);
   }

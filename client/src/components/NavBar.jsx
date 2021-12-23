@@ -1,14 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navbar, Nav, Button } from "react-bootstrap";
 import "../index.css";
 import { useRef } from "react";
 import axios from "axios";
+import { NavLink } from "react-router-dom";
+
 import { useNavigate } from "react-router-dom";
 
 function NavBar() {
-  const localUserDetails = JSON.parse(localStorage.getItem("storedUser"));
-  const userDets = localUserDetails?.user;
   const navigate = useNavigate();
+
+  const localUserDetails = JSON.parse(localStorage.getItem("storedUser"));
+  useEffect(() => {
+    if (!localUserDetails) {
+      navigate("/login");
+    }
+    // eslint-disable-next-line
+  }, []);
+  const userDets = localUserDetails?.user;
 
   const [passwordDetails, setPasswordDetails] = useState({});
   const password = useRef();
@@ -37,99 +46,133 @@ function NavBar() {
   };
   return (
     <>
-      <Navbar bg="light" expand="lg">
-        <Navbar.Brand className="mx-4" href="#home">
-          Leave management
-        </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
-            <strong className="navbar-text">
-              Hello, {userDets?.staffName}
-            </strong>
-          </Nav>
-        </Navbar.Collapse>
+      {userDets ? (
+        <Navbar bg="light" expand="lg">
+          <Navbar.Brand className="mx-4" to="#home">
+            Leave management
+          </Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="me-auto">
+              <strong className="navbar-text">
+                Hello, {userDets?.staffName}
+              </strong>
+              <Nav.Link
+                as={NavLink}
+                to={userDets?.role === "Admin" ? "/admin" : "/"}
+              >
+                Home
+              </Nav.Link>
+              {userDets.role !== "Admin" && (
+                <Nav.Link as={NavLink} to="/profile">
+                  My profile
+                </Nav.Link>
+              )}
 
-        <Button
-          className="d-flex mx-4"
-          variant="primary"
-          onClick={() => {
-            localStorage.removeItem("storedUser");
-            navigate("/login");
-          }}
-        >
-          Logout
-        </Button>
+              <Nav.Link
+                as={NavLink}
+                to={
+                  userDets?.role === "Admin" ? "/leaveRequests" : "/createLeave"
+                }
+              >
+                {userDets?.role === "Admin"
+                  ? "Incoming Leave Requests"
+                  : "Create a new leave"}
+              </Nav.Link>
+            </Nav>
+          </Navbar.Collapse>
 
-        <button
-          type="button"
-          className="btn btn-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#exampleModal"
-        >
-          Change Password
-        </button>
+          <Button
+            className="d-flex mx-4"
+            variant="primary"
+            onClick={() => {
+              localStorage.removeItem("storedUser");
+              navigate("/login");
+            }}
+          >
+            Logout
+          </Button>
 
-        <div
-          className="modal fade"
-          id="exampleModal"
-          tabIndex="-1"
-          aria-labelledby="exampleModalLabel"
-          aria-hidden="true"
-        >
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title" id="exampleModalLabel">
-                  Change Password
-                </h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                ></button>
-              </div>
-              <div className="modal-body">
-                <label>Old Password:</label>
-                <input
-                  name="oldPassword"
-                  className="pwdBox"
-                  onChange={changeHandler}
-                  type="text"
-                />
-                <label>New Password:</label>
-                <input
-                  name="password"
-                  onChange={changeHandler}
-                  type="password"
-                  className="pwdBox"
-                  ref={password}
-                />
-                <label>New Password again:</label>
-                <input ref={passwordAgain} type="password" className="pwdBox" />
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  data-bs-dismiss="modal"
-                >
-                  Close
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={changePasswordSubmit}
-                  data-bs-dismiss="modal"
-                >
-                  Save changes
-                </button>
+          <button
+            type="button"
+            className="btn btn-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#exampleModal"
+          >
+            Change Password
+          </button>
+
+          <div
+            className="modal fade"
+            id="exampleModal"
+            tabIndex="-1"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true"
+          >
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title" id="exampleModalLabel">
+                    Change Password
+                  </h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  <label>Old Password:</label>
+                  <input
+                    name="oldPassword"
+                    className="pwdBox"
+                    onChange={changeHandler}
+                    type="text"
+                  />
+                  <label>New Password:</label>
+                  <input
+                    name="password"
+                    onChange={changeHandler}
+                    type="password"
+                    className="pwdBox"
+                    ref={password}
+                  />
+                  <label>New Password again:</label>
+                  <input
+                    ref={passwordAgain}
+                    type="password"
+                    className="pwdBox"
+                  />
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={changePasswordSubmit}
+                    data-bs-dismiss="modal"
+                  >
+                    Save changes
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </Navbar>
+        </Navbar>
+      ) : (
+        <Navbar bg="light" expand="lg">
+          <Navbar.Brand className="mx-4" to="#home">
+            Leave management
+          </Navbar.Brand>
+        </Navbar>
+      )}
     </>
   );
 }

@@ -2,17 +2,21 @@
   opacity: 0.8;
   margin-left: 0.3rem;
 }
+
 .theads {
   text-align: center;
 }
+
 .center {
   text-align: center;
 }
+
 .loginContainer {
   display: flex;
   justify-content: center;
   margin-top: 15rem;
 }
+
 .container2 {
   padding: 1rem;
   width: 30%;
@@ -25,6 +29,7 @@
   margin: 0.5rem;
   margin-top: 2rem;
 }
+
 .myRequests h1 {
   text-align: center;
   padding: 0.5rem;
@@ -38,9 +43,11 @@
   border-radius: 0.2rem;
   padding: 1rem;
 }
+
 .recievedRequests h1 {
   text-align: center;
 }
+
 .tableRequests {
   border: 0.1rem black solid;
   border-radius: 0.2rem;
@@ -53,10 +60,13 @@
   padding: 1rem;
   border-radius: 0.2rem;
   border: 0.1rem black solid;
+  margin-top: 5rem;
 }
+
 .leaveForm h1 {
   text-align: center;
 }
+
 .pwdBox {
   width: 100%;
 }

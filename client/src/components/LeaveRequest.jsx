@@ -1,24 +1,23 @@
-import { Form, FloatingLabel, Button, Table } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 import { useContext, useEffect, useState } from "react";
 import LeaveContext from "../context/LeaveContext";
 import "../index.css";
+import DeleteOutlineTwoToneIcon from "@mui/icons-material/DeleteOutlineTwoTone";
+import { useNavigate } from "react-router-dom";
 
 // import CheckCircleOutlineTwoToneIcon from "@mui/icons-material/CheckCircleOutlineTwoTone";
 // import CancelTwoToneIcon from "@mui/icons-material/CancelTwoTone";
 
 function LeaveRequest() {
+  const localUserDetails = JSON.parse(localStorage.getItem("storedUser"));
+  const userDets = localUserDetails?.user;
+
   const [userChange, setuserChange] = useState(false);
   const [modalDetails, setModalDetails] = useState({});
 
   const userContext = useContext(LeaveContext);
-
-  const localUserDetails = JSON.parse(localStorage.getItem("storedUser"));
-  const userDets = localUserDetails?.user;
-
+  const navigate = useNavigate();
   const {
-    userArr,
-    getusers,
-    postLeaveDetails,
     recievedLeaveArr,
     recievedRequests,
     requestedLeavesArr,
@@ -26,44 +25,28 @@ function LeaveRequest() {
     staffStatus,
     requestesForHod,
     requestesForHodArr,
+    deleteLeave,
   } = userContext;
   useEffect(() => {
-    getusers();
+    if (!userDets) {
+      console.log("jfsd");
+      navigate("/login");
+    }
+    // eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
     // console.log(requestedLeavesArr);
     recievedRequests(userDets?.staffName);
     myRequestedLeaves(userDets?._id);
     if (userDets?.role === "Hod") {
       requestesForHod(userDets?.department);
     }
-
     // eslint-disable-next-line
   }, [userChange]);
 
-  const filteredArr = userArr.filter(
-    (user) => user?.role === "Staff" && user?.staffName !== userDets?.staffName
-  );
-  //   console.log(requestedLeavesArr, "asdjak");
-
-  const [leaveData, setLeaveData] = useState({
-    userId: userDets?._id,
-    department: userDets?.department,
-    name: userDets?.staffName,
-  });
-
-  const changeInputHandler = (e) => {
-    setLeaveData({ ...leaveData, [e.target.name]: e.target.value });
-  };
-
-  const clearFields = (e) => {
-    Array.from(e.target).forEach((e) => (e.value = ""));
-  };
-
-  const sendLeaveDetails = (e) => {
-    e.preventDefault();
-    clearFields(e);
-
-    postLeaveDetails(leaveData);
-
+  const deleteUserFrontend = (leaveReq) => {
+    deleteLeave(leaveReq._id);
     setuserChange(!userChange);
   };
   let count = 0;
@@ -91,7 +74,7 @@ function LeaveRequest() {
                 <th>To</th>
                 <th>Staff-status</th>
                 <th>Hod-status</th>
-                <th>Principal-status</th>
+                <th>Delete</th>
               </tr>
             </thead>
             <tbody>
@@ -124,106 +107,23 @@ function LeaveRequest() {
                         <span className="text-danger fw-bold">Declined</span>
                       )}
                     </td>
-                    <td>
-                      {leaveReq.byPrincipal === 0 && (
-                        <span className="text-warning fw-bold">Pending...</span>
-                      )}
-                      {leaveReq.byPrincipal === 1 && (
-                        <span className="text-success fw-bold">Approved</span>
-                      )}
-                      {leaveReq.byPrincipal === 2 && (
-                        <span className="text-danger fw-bold">Declined</span>
-                      )}
+                    <td
+                      onClick={() => deleteUserFrontend(leaveReq)}
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <span>
+                        <DeleteOutlineTwoToneIcon />
+                      </span>
                     </td>
                   </tr>
                 );
               })}
             </tbody>
           </Table>
-        </div>
-
-        <div className="leaveForm">
-          <h1>Apply for a new leave</h1>
-          <hr />
-          <Form onSubmit={sendLeaveDetails}>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label className="fs-3">Subject</Form.Label>
-              <Form.Control
-                name="subject"
-                onChange={changeInputHandler}
-                type="text"
-              />
-            </Form.Group>
-            <Form.Group
-              className="mb-3"
-              controlId="exampleForm.ControlTextarea1"
-            >
-              <Form.Label className="fs-3">Description</Form.Label>
-              <Form.Control
-                onChange={changeInputHandler}
-                as="textarea"
-                rows={3}
-                name="body"
-              />
-            </Form.Group>
-            <Form.Label className="fs-3">Type of leave</Form.Label>
-            <FloatingLabel
-              controlId="floatingSelect"
-              label="Select type of leave"
-            >
-              <Form.Select
-                aria-label="Floating label select example"
-                onChange={changeInputHandler}
-                name="isSick"
-              >
-                <option></option>
-                required
-                <option value={true}>Duty</option>
-                <option value={false}>Casual</option>
-              </Form.Select>
-            </FloatingLabel>
-            <div>
-              <label className="me-2 fs-4">Start date:</label>
-              <input
-                name="dateStart"
-                onChange={changeInputHandler}
-                className="mb-1"
-                type="date"
-              />
-              <label className=" ms-2 fs-4">End date:</label>
-              <input
-                name="dateEnd"
-                onChange={changeInputHandler}
-                className="mb-1"
-                type="date"
-              />
-            </div>
-
-            <FloatingLabel
-              className="mt-3"
-              controlId="floatingSelect"
-              label="Select a substitute staff"
-            >
-              <Form.Select
-                name="subStaff"
-                onChange={changeInputHandler}
-                aria-label="Floating label select example"
-              >
-                <option></option>
-                {filteredArr.map((user) => {
-                  return (
-                    <option key={user.staffId} value={user.staffName}>
-                      {user.staffName}
-                    </option>
-                  );
-                })}
-              </Form.Select>
-            </FloatingLabel>
-
-            <Button variant="primary" className="mt-4" type="submit">
-              Submit
-            </Button>
-          </Form>
         </div>
       </div>
 

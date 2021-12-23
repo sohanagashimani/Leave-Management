@@ -1,15 +1,15 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
-
-import App from './App';
-
+import React from "react";
+import ReactDOM from "react-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
+import LeaveState from "./context/LeaveState";
+import App from "./App";
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <LeaveState>
+      <App />
+    </LeaveState>
   </React.StrictMode>,
-  document.getElementById('root')
+
+  document.getElementById("root")
 );
-
-

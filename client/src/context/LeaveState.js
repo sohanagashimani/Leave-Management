@@ -7,7 +7,8 @@ function LeaveState(props) {
   const [recievedLeaveArr, setRecievedLeaveArr] = useState([]);
   const [requestedLeavesArr, setRequestedLeavesArr] = useState([]);
   const [requestesForHodArr, setRequestesForHodArr] = useState([]);
-  const [requestesForPrincipalArr, setRequestesForPrincipalArr] = useState([]);
+  const [requestsForAdminArr, setRequestsForAdminArr] = useState([]);
+
 
   const getusers = async () => {
     try {
@@ -26,10 +27,12 @@ function LeaveState(props) {
       console.log(error);
     }
   };
-  const staffStatus = async (leaveId, status, role) => {
+  const staffStatus = async (leaveId, status, role, leaveCount) => {
     try {
       console.log("insideeeeee");
-      axios.put(`http://localhost:4000/api/leave/${leaveId}/${status}/${role}`);
+      axios.put(
+        `http://localhost:4000/api/leave/${leaveId}/${status}/${role}/${leaveCount}`
+      );
     } catch (error) {
       console.log(error);
     }
@@ -41,7 +44,13 @@ function LeaveState(props) {
       console.log(error);
     }
   };
-
+  const deleteLeave = async (id) => {
+    try {
+      await axios.delete(`http://localhost:4000/api/leave/${id}`);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const recievedRequests = async (staffname) => {
     try {
       const recievedLeave = await axios.get(
@@ -73,12 +82,12 @@ function LeaveState(props) {
       console.log(error);
     }
   };
-  const requestesForPrincipal = async () => {
+  const requestsForAdmin = async () => {
     try {
       const reqsForPrincipal = await axios.get(
         `http://localhost:4000/api/leave/`
       );
-      setRequestesForPrincipalArr(reqsForPrincipal.data);
+      setRequestsForAdminArr(reqsForPrincipal.data);
     } catch (error) {
       console.log(error);
     }
@@ -89,8 +98,8 @@ function LeaveState(props) {
         "http://localhost:4000/api/auth/login",
         userDetails
       );
-
       localStorage.setItem("storedUser", JSON.stringify(loggedUser.data));
+
     } catch (err) {
       console.log(err);
     }
@@ -110,9 +119,11 @@ function LeaveState(props) {
         staffStatus,
         requestesForHod,
         requestesForHodArr,
-        requestesForPrincipal,
-        requestesForPrincipalArr,
+        requestsForAdmin,
+        requestsForAdminArr,
         login,
+        deleteLeave,
+
       }}
     >
       {props.children}
