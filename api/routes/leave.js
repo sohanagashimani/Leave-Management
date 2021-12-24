@@ -115,7 +115,7 @@ router.put("/:leaveId/:byStaff/:role/:leaveCount", async (req, res) => {
         }
       } else if (leaveStatus.byHod === 1 && leaveStatus.type === "Earned") {
         if (user.type === "Regular") {
-          const updatedLeaves = user.regularStaffLeaves - req.params.leaveCount;
+          const updatedLeaves = user.earnedLeaves - req.params.leaveCount;
           // console.log(updatedLeaves)
           await Staff.findByIdAndUpdate(user._id, {
             earnedLeaves: updatedLeaves,
@@ -130,7 +130,7 @@ router.put("/:leaveId/:byStaff/:role/:leaveCount", async (req, res) => {
       const leaveStatus = await Leave.findById(req.params.leaveId);
       const userId = await leaveStatus.userId;
       const user = await Staff.findById(userId);
-      if (leaveStatus.byAdmin === 1 && leaveStatus.type !== "Duty") {
+      if (leaveStatus.byAdmin === 1 && leaveStatus.type === "Casual") {
         if (user.type === "Regular") {
           const updatedLeaves = user.regularStaffLeaves - req.params.leaveCount;
           // console.log(updatedLeaves)
@@ -146,7 +146,7 @@ router.put("/:leaveId/:byStaff/:role/:leaveCount", async (req, res) => {
         }
       } else if (leaveStatus.byHod === 1 && leaveStatus.type === "Earned") {
         if (user.type === "Regular") {
-          const updatedLeaves = user.regularStaffLeaves - req.params.leaveCount;
+          const updatedLeaves = user.earnedLeaves - req.params.leaveCount;
           // console.log(updatedLeaves)
           await Staff.findByIdAndUpdate(user._id, {
             earnedLeaves: updatedLeaves,

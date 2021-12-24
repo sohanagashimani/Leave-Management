@@ -13,6 +13,7 @@ function CreateLeave() {
   const [dateEndState, setDateEndState] = useState(null);
   const [dateStartState, setDateStartState] = useState(null);
   const [isEndDateDisabled, setIsEndDateDisabled] = useState(true);
+  const [isSubmitDisabled, setisSubmitDisabled] = useState(false);
   const [leaveData, setLeaveData] = useState({
     userId: userDets?._id,
     department: userDets?.department,
@@ -42,8 +43,25 @@ function CreateLeave() {
     } else {
       setIsEndDateDisabled(true);
     }
+
+    if (userDets.type === "Regular") {
+      if (
+        totalLeaveDays > userDets.regularStaffLeaves &&
+        totalLeaveDays > userDets.earnedLeaves
+      ) {
+        setisSubmitDisabled(true);
+      } else {
+        setisSubmitDisabled(false);
+      }
+    } else if (userDets.type === "Probation") {
+      if (totalLeaveDays > userDets.probationStaffLeaves) {
+        setisSubmitDisabled(true);
+      } else {
+        setisSubmitDisabled(false);
+      }
+    }
     // eslint-disable-next-line
-  }, [dateEndState, dateStartState]);
+  }, [dateEndState, dateStartState, totalLeaveDays]);
   useEffect(() => {
     if (!userDets) {
       navigate("/login");
@@ -58,6 +76,7 @@ function CreateLeave() {
   const { userArr, getusers, postLeaveDetails } = userContext;
   const sendLeaveDetails = (e) => {
     e.preventDefault();
+
     console.log(leaveData);
     postLeaveDetails(leaveData);
     setuserChange(!userChange);
@@ -66,7 +85,6 @@ function CreateLeave() {
 
   const changeInputHandler = (e) => {
     setLeaveData({ ...leaveData, [e.target.name]: e.target.value });
-
     if (e.target.name === "dateEnd") {
       setDateEndState(e.target.value);
     }
@@ -177,7 +195,12 @@ function CreateLeave() {
                 </Form.Select>
               </FloatingLabel>
 
-              <Button variant="primary" className="mt-4" type="submit">
+              <Button
+                variant="primary"
+                disabled={isSubmitDisabled}
+                className="mt-4"
+                type="submit"
+              >
                 Submit
               </Button>
             </Form>
@@ -270,13 +293,18 @@ function CreateLeave() {
               </Form.Select>
             </FloatingLabel>
 
-            <Button variant="primary" className="mt-4" type="submit">
+            <Button
+              variant="primary"
+              className="mt-4"
+              disabled={isSubmitDisabled}
+              type="submit"
+            >
               Submit
             </Button>
           </Form>
         </div>
       ) : (
-        "fjlds"
+        <h1>No Leaves Remaining</h1>
       )}
     </>
   );

@@ -28,6 +28,7 @@ router.post("/register", async (req, res) => {
       department: req.body.department,
       type: req.body.type,
       joiningDate: dt,
+      tempDate: dt,
     });
     // console.log(newUser);
     // save user and send response
@@ -57,27 +58,71 @@ router.post("/login", async (req, res) => {
       return res.status(200).json({ msg: "wrong password", success: false });
     }
     if (user.type !== "Regular") {
-      const joiningMonth = user.joiningDate.getMonth();
       const joiningYear = user.joiningDate.getFullYear();
-      const currentMonth = new Date().getMonth();
       const currentYear = new Date().getFullYear();
       const typeChange = currentYear - joiningYear;
-      const probationLeaves = currentMonth - joiningMonth;
+
       if (typeChange !== 0) {
+        const regularBalance = 11 - joiningMonth;
         await Staff.findByIdAndUpdate(user._id, {
           type: "Regular",
+          regularStaffLeaves: regularBalance,
         });
         return res.status(200).json({ user, success: true });
       } else {
+        const currentMonth = new Date().getMonth();
+        const tempMonth = user.tempDate.getMonth();
+        const monthChange = currentMonth - tempMonth;
+        if (monthChange !== 0) {
+          const currentDate = new Date();
+          const updatedProbationLeaves =
+            user.probationStaffLeaves + monthChange;
+          await Staff.findByIdAndUpdate(user._id, {
+            probationStaffLeaves: updatedProbationLeaves,
+            tempDate: currentDate,
+          });
+          user = await Staff.findOne({
+            email: req.body.email,
+          });
+          return res.status(200).json({ user, success: true });
+        } else {
+          return res.status(200).json({ user, success: true });
+        }
+      }
+    } else if (user.role === "Admin") {
+      const dateObj = new Date();
+      const month = dateObj.getUTCMonth() + 1; //months from 1-12
+      const day = dateObj.getUTCDate();
+      const year = dateObj.getUTCFullYear();
+      const newdate = year + "/" + month + "/" + day;
+      const yearBegins = new Date(dateObj.getFullYear(), 0, 1);
+      const janYear = yearBegins.getFullYear();
+      const firstOfJan = janYear + "/" + 12 + "/" + 24;
+      if (newdate === firstOfJan) {
+        await Staff.updateMany(
+          { type: "Regular" },
+          {
+            regularStaffLeaves: 12,
+          }
+        );
+      }
+      return res.status(200).json({ user, success: true });
+    } else if (user.type === "Regular") {
+      const currentDate = new Date();
+      const currentYear = new Date().getFullYear();
+      const tempYear = user.tempDate.getFullYear();
+      const typeChange = currentYear - tempYear;
+      if (typeChange !== 0) {
+        const updatedEarnedLeaves = typeChange * (user.earnedLeaves + 10);
         await Staff.findByIdAndUpdate(user._id, {
-          probationStaffLeaves: probationLeaves,
+          tempDate: currentDate,
+          earnedLeaves: updatedEarnedLeaves,
         });
         user = await Staff.findOne({
           email: req.body.email,
         });
         return res.status(200).json({ user, success: true });
       }
-    } else {
       return res.status(200).json({ user, success: true });
     }
   } catch (err) {

@@ -46,6 +46,9 @@ const staffSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+    tempDate: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
