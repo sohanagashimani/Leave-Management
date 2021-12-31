@@ -56,11 +56,11 @@ router.get("/staff/:staffname", async (req, res) => {
   }
 });
 
-// get hod leave requests(admin)
+// get admin specific requests(hod's requests)
 router.get("/", async (req, res) => {
   try {
     const user = await Staff.find({ role: "Hod" });
-    if (!user) return res.status(200).send("no hods found");
+    if (!user) return res.status(200).send([], "no hods found");
 
     const reqForAdmin = await Promise.all(
       user.map((i) => {

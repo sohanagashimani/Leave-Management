@@ -74,16 +74,15 @@ function Create() {
     e.preventDefault();
     setFormErrors(validate(user));
     if (
-      !(
-        user.staffId &&
-        user.staffName &&
-        user.email &&
-        user.joiningDate &&
-        user.password &&
-        user.phnumber &&
-        user.role &&
-        user.type
-      )
+      !(user.staffId &&
+      user.staffName &&
+      user.email &&
+      user.joiningDate &&
+      user.password &&
+      user.phnumber &&
+      user.role !== "Principal"
+        ? user.type && user.department
+        : user.type)
     )
       return;
 
@@ -117,6 +116,8 @@ function Create() {
   const handleChange = (e) => {
     if (user.role === "Staff" || user.role === "Hod") {
       setisDisabled(false);
+    } else {
+      setisDisabled(true);
     }
     setUser({ ...user, [e.target.name]: e.target.value });
   };
@@ -225,7 +226,6 @@ function Create() {
                   <option value="Hod">Hod</option>
                   <option value="Staff">Staff</option>
                   <option value="Principal">Principal</option>
-                  <option value="Admin">Admin</option>
                 </Form.Select>{" "}
                 <p className="text-danger">{formErrors.role}</p>
               </FloatingLabel>

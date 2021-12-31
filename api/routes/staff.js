@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const Staff = require("../models/Staff");
 const bcrypt = require("bcrypt");
+const Leave = require("../models/Leave");
 // update a user
 router.put("/:id", async (req, res) => {
   if (req.body.oldPassword) {
@@ -55,10 +56,12 @@ router.get("/fetchusers", async (req, res) => {
 //delete user
 router.delete("/:id", async (req, res) => {
   try {
-    const user = await Staff.findByIdAndDelete(req.params.id);
-    res.status(200).json("acccount has been deleted successfully");
+    const userId = req.params.id;
+    await Leave.deleteMany({ userId: userId });
+    await Staff.findByIdAndDelete(userId);
+    res.status(200).json("User has been deleted successfully");
   } catch (err) {
-    return res.status(500).json(err, "Internal server error");
+    return res.status(500).json(err);
   }
 });
 
