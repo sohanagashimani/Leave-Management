@@ -5,10 +5,13 @@ import { useContext } from "react";
 import LeaveContext from "../../context/LeaveContext";
 import DeleteOutlineTwoToneIcon from "@mui/icons-material/DeleteOutlineTwoTone";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function Create() {
   const [userChange, setuserChange] = useState(false);
+  const [isDisabled, setisDisabled] = useState(true);
   const [user, setUser] = useState({});
+  const [formErrors, setFormErrors] = useState({});
   const userContext = useContext(LeaveContext);
   const { getusers, userArr, deleteUser } = userContext;
 
@@ -21,21 +24,79 @@ function Create() {
     }
     // eslint-disable-next-line
   }, []);
+  const validate = (values) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phregex = /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/im;
+
+    const errors = {};
+    if (!values.staffId) {
+      errors.staffId = "Staff Id is required ";
+    }
+    if (!values.staffName) {
+      errors.staffName = "Staff name  is required ";
+    }
+    if (!values.email) {
+      errors.email = "Email id  is required ";
+    } else if (!emailRegex.test(values.email)) {
+      errors.email = "Enter a valid email address";
+    }
+    if (!values.password) {
+      errors.password = "Password  is required ";
+    }
+    if (!values.joiningDate) {
+      errors.joiningDate = "Joining date  is required ";
+    }
+    if (!values.phnumber) {
+      errors.phnumber = "Phone number  is required ";
+    } else if (!phregex.test(values.phnumber)) {
+      errors.phnumber = "Enter a valid phone number";
+    }
+    if (!values.role) {
+      errors.role = "Role is required ";
+    }
+    if (!values.type) {
+      errors.type = "Type  is required ";
+    }
+    if (values.role !== "Principal") {
+      if (!values.department) {
+        errors.department = "department  is required ";
+      }
+    }
+    return errors;
+  };
 
   useEffect(() => {
-    getusers();
+    if (userDets?.role === "Admin") getusers();
     // eslint-disable-next-line
   }, [userChange]);
 
   const handleClick = async (e) => {
     e.preventDefault();
+    setFormErrors(validate(user));
+    if (
+      !(
+        user.staffId &&
+        user.staffName &&
+        user.email &&
+        user.joiningDate &&
+        user.password &&
+        user.phnumber &&
+        user.role &&
+        user.type
+      )
+    )
+      return;
+
     try {
       const json = await axios.post(
         "http://localhost:4000/api/auth/register",
         user
       );
+
       if (json.data.success === false) {
-        user.email.current.setCustomValidity("User exists");
+        toast.error(json.data.msg);
+      } else if (json.data.success) {
+        toast.success("user successfully created");
       }
     } catch (error) {
       console.log(error);
@@ -43,15 +104,23 @@ function Create() {
     setuserChange(!userChange);
   };
 
-  const deleteUserFrontend = (user) => {
-    deleteUser(user._id);
+  const deleteUserFrontend = async (user) => {
+    const deleteResponse = await deleteUser(user._id);
+    if (deleteResponse) {
+      toast.success(deleteResponse);
+    } else {
+      toast.error("internal server error");
+    }
     setuserChange(!userChange);
   };
 
   const handleChange = (e) => {
+    if (user.role === "Staff" || user.role === "Hod") {
+      setisDisabled(false);
+    }
     setUser({ ...user, [e.target.name]: e.target.value });
   };
-  // console.log(user,"userrr");
+
   return (
     <>
       <div className="container my-5">
@@ -67,9 +136,9 @@ function Create() {
                 onChange={handleChange}
                 name="staffId"
                 type="text"
-                required
                 placeholder="Staff Id"
               />
+              <p className="text-danger">{formErrors.staffId}</p>
             </Col>
           </Form.Group>
           <Form.Group as={Row} className="mb-3" controlId="formPlaintextEmail">
@@ -81,9 +150,9 @@ function Create() {
                 onChange={handleChange}
                 name="staffName"
                 type="text"
-                required
                 placeholder="Staff Name"
               />
+              <p className="text-danger">{formErrors.staffName}</p>
             </Col>
           </Form.Group>
           <Form.Group as={Row} className="mb-3" controlId="formPlaintextEmail">
@@ -95,9 +164,9 @@ function Create() {
                 onChange={handleChange}
                 type="email"
                 name="email"
-                required
                 placeholder="Email"
               />
+              <p className="text-danger">{formErrors.email}</p>
             </Col>
           </Form.Group>
           <Form.Group as={Row} className="mb-3" controlId="formPlaintextEmail">
@@ -109,9 +178,9 @@ function Create() {
                 onChange={handleChange}
                 type="Password"
                 name="password"
-                required
                 placeholder="Password"
               />
+              <p className="text-danger">{formErrors.password}</p>
             </Col>
           </Form.Group>
           <Form.Group as={Row} className="mb-3" controlId="formPlaintextEmail">
@@ -123,8 +192,8 @@ function Create() {
                 onChange={handleChange}
                 type="date"
                 name="joiningDate"
-                required
-              />
+              />{" "}
+              <p className="text-danger">{formErrors.joiningDate}</p>
             </Col>
           </Form.Group>
           <Form.Group as={Row} className="mb-3" controlId="formPlaintextEmail">
@@ -137,8 +206,8 @@ function Create() {
                 type="tel"
                 name="phnumber"
                 placeholder="Phone Number"
-                required
               />
+              <p className="text-danger">{formErrors.phnumber}</p>
             </Col>
           </Form.Group>
           <Form.Group as={Row} className="mb-3" controlId="formPlaintextEmail">
@@ -152,13 +221,13 @@ function Create() {
                   name="role"
                   onChange={handleChange}
                 >
-                  required
                   <option></option>
                   <option value="Hod">Hod</option>
                   <option value="Staff">Staff</option>
                   <option value="Principal">Principal</option>
                   <option value="Admin">Admin</option>
-                </Form.Select>
+                </Form.Select>{" "}
+                <p className="text-danger">{formErrors.role}</p>
               </FloatingLabel>
             </Col>
           </Form.Group>
@@ -176,11 +245,11 @@ function Create() {
                   name="type"
                   onChange={handleChange}
                 >
-                  required
                   <option> </option>
                   <option value="Regular">Regular</option>
                   <option value="Probation">Probation</option>
-                </Form.Select>
+                </Form.Select>{" "}
+                <p className="text-danger">{formErrors.type}</p>
               </FloatingLabel>
             </Col>
           </Form.Group>
@@ -201,16 +270,18 @@ function Create() {
                 <Form.Select
                   aria-label="Floating label select example"
                   name="department"
+                  disabled={isDisabled}
                   onChange={handleChange}
                 >
                   <option></option>
-                  required
+
                   <option value="CSE">CSE</option>
                   <option value="ECE">ECE</option>
                   <option value="EEE">EEE</option>
                   <option value="CIV">CIV</option>
                   <option value="ME">ME</option>
-                </Form.Select>
+                </Form.Select>{" "}
+                <p className="text-danger">{formErrors.department}</p>
               </FloatingLabel>
             </Col>
           </Form.Group>
@@ -229,6 +300,8 @@ function Create() {
               <th>Email </th>
               <th>Phone Number</th>
               <th>Role</th>
+              <th>Type</th>
+              <th>Leaves remaining</th>
               <th>Department</th>
             </tr>
           </thead>
@@ -236,24 +309,38 @@ function Create() {
             {userArr.map((user) => {
               return (
                 <tr key={user.staffId}>
-                  <td>{user.staffId}</td>
-                  <td>{user.staffName}</td>
-                  <td>{user.email}</td>
-                  <td>{user.phnumber}</td>
-                  <td>{user.role}</td>
-                  <td
-                    onClick={() => deleteUserFrontend(user)}
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <span>{user.department}</span>{" "}
-                    <span>
-                      <DeleteOutlineTwoToneIcon />
-                    </span>
-                  </td>
+                  {user.role !== "Admin" && (
+                    <>
+                      <td>{user.staffId}</td>
+                      <td>{user.staffName}</td>
+                      <td>{user.email}</td>
+                      <td>{user.phnumber}</td>
+                      <td>{user.role}</td>
+                      <td>{user.type}</td>
+                      <td>
+                        {user.type === "Regular" ? (
+                          <span>
+                            {user.earnedLeaves + user.regularStaffLeaves}
+                          </span>
+                        ) : (
+                          <span>{user.probationStaffLeaves}</span>
+                        )}
+                      </td>
+                      <td
+                        onClick={() => deleteUserFrontend(user)}
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <span>{user.department}</span>{" "}
+                        <span>
+                          <DeleteOutlineTwoToneIcon />
+                        </span>
+                      </td>
+                    </>
+                  )}
                 </tr>
               );
             })}

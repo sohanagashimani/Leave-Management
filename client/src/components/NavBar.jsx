@@ -4,8 +4,9 @@ import "../index.css";
 import { useRef } from "react";
 import axios from "axios";
 import { NavLink } from "react-router-dom";
-
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function NavBar() {
   const navigate = useNavigate();
@@ -20,24 +21,44 @@ function NavBar() {
   const userDets = localUserDetails?.user;
 
   const [passwordDetails, setPasswordDetails] = useState({});
+
   const password = useRef();
   const passwordAgain = useRef();
+  const [formErrors, setFormErrors] = useState({});
+  const validate = (values) => {
+    const errors = {};
+    if (!values.oldPassword) {
+      errors.oldPassword = "Old password is required";
+    }
+    if (!values.password) {
+      errors.password = "Password is required";
+    }
+    return errors;
+  };
 
   const changeHandler = (e) => {
     setPasswordDetails({ ...passwordDetails, [e.target.name]: e.target.value });
   };
-
   const changePasswordSubmit = async (e) => {
+    setFormErrors(validate(passwordDetails));
     if (passwordAgain.current.value !== password.current.value) {
-      passwordAgain.current.setCustomValidity("passwords dont match");
+      toast.warning("New passwords do not match");
     } else {
       try {
         const json = await axios.put(
           `http://localhost:4000/api/staff/${userDets._id}`,
-          passwordDetails
+          passwordDetails,
+          {
+            headers: {
+              "content-Type": "application/json",
+            },
+          }
         );
+
         if (json.data.success) {
-          console.log(json.data.message);
+          toast.success("Password updated");
+        } else if (passwordDetails.oldPassword && passwordDetails.password) {
+          toast.error("Incorrect old password");
         }
       } catch (error) {
         console.log(error);
@@ -59,7 +80,13 @@ function NavBar() {
               </strong>
               <Nav.Link
                 as={NavLink}
-                to={userDets?.role === "Admin" ? "/admin" : "/"}
+                to={
+                  userDets?.role === "Admin"
+                    ? "/admin"
+                    : userDets.role !== "Principal"
+                    ? "/"
+                    : "/principal"
+                }
               >
                 Home
               </Nav.Link>
@@ -69,16 +96,20 @@ function NavBar() {
                 </Nav.Link>
               )}
 
-              <Nav.Link
-                as={NavLink}
-                to={
-                  userDets?.role === "Admin" ? "/leaveRequests" : "/createLeave"
-                }
-              >
-                {userDets?.role === "Admin"
-                  ? "Incoming Leave Requests"
-                  : "Create a new leave"}
-              </Nav.Link>
+              {userDets.role !== "Principal" && (
+                <Nav.Link
+                  as={NavLink}
+                  to={
+                    userDets?.role === "Admin"
+                      ? "/leaveRequests"
+                      : "/createLeave"
+                  }
+                >
+                  {userDets?.role === "Admin"
+                    ? "Incoming Leave Requests"
+                    : "Create a new leave"}
+                </Nav.Link>
+              )}
             </Nav>
           </Navbar.Collapse>
 
@@ -130,6 +161,7 @@ function NavBar() {
                     onChange={changeHandler}
                     type="text"
                   />
+                  <p className="text-danger">{formErrors.oldPassword}</p>
                   <label>New Password:</label>
                   <input
                     name="password"
@@ -138,6 +170,7 @@ function NavBar() {
                     className="pwdBox"
                     ref={password}
                   />
+                  <p className="text-danger">{formErrors.password}</p>
                   <label>New Password again:</label>
                   <input
                     ref={passwordAgain}
@@ -157,7 +190,6 @@ function NavBar() {
                     type="button"
                     className="btn btn-primary"
                     onClick={changePasswordSubmit}
-                    data-bs-dismiss="modal"
                   >
                     Save changes
                   </button>

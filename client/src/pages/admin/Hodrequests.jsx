@@ -7,9 +7,9 @@ function Hodrequests() {
   const navigate = useNavigate();
   const [modalDetails, setModalDetails] = useState({});
   const userContext = useContext(LeaveContext);
+  const [userChange, setuserChange] = useState(false);
 
   const { requestsForAdmin, requestsForAdminArr, staffStatus } = userContext;
-  console.log(requestsForAdminArr);
 
   const localUserDetails = JSON.parse(localStorage.getItem("storedUser"));
   const userDets = localUserDetails?.user;
@@ -20,13 +20,13 @@ function Hodrequests() {
     // eslint-disable-next-line
   }, []);
   useEffect(() => {
-    requestsForAdmin();
+    if (userDets) requestsForAdmin();
     // eslint-disable-next-line
-  }, []);
+  }, [userChange]);
   const populateModal = (modalDeets) => {
     setModalDetails(modalDeets);
   };
-  console.log(modalDetails);
+
   return (
     <>
       <div className="container my-5">
@@ -141,6 +141,7 @@ function Hodrequests() {
                                   "Admin",
                                   modalDetails.noOfDays
                                 );
+                                setuserChange(!userChange);
                               }}
                             >
                               Accept
@@ -153,8 +154,10 @@ function Hodrequests() {
                                 staffStatus(
                                   modalDetails._id,
                                   2,
-                                  userDets?.role
+                                  "Admin",
+                                  modalDetails.noOfDays
                                 );
+                                setuserChange(!userChange);
                               }}
                             >
                               Decline

@@ -1,8 +1,16 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Form, Button } from "react-bootstrap";
 import LeaveContext from "../../context/LeaveContext";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function Login() {
+  const userContext = useContext(LeaveContext);
+  const navigate = useNavigate();
+  const { login } = userContext;
+  const [user, setUser] = useState({});
+
+  const [formErrors, setFormErrors] = useState({});
   useEffect(() => {
     localStorage.removeItem("storedUser");
     const reloadCount = sessionStorage.getItem("reloadCount");
@@ -13,19 +21,19 @@ function Login() {
       sessionStorage.removeItem("reloadCount");
     }
   }, []);
-  const userContext = useContext(LeaveContext);
-  const navigate = useNavigate();
-  const { login } = userContext;
-  const [user, setUser] = useState({});
+
   const handleOnChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
+
   const handleOnSubmit = async (e) => {
     e.preventDefault();
-    await login(user);
+    setFormErrors(validate(user));
+    if (user.email && user.password) {
+      await login(user);
+    }
     const localUserDetails = JSON.parse(localStorage.getItem("storedUser"));
-
-    if (localUserDetails.success) {
+    if (localUserDetails?.success) {
       const userDets = localUserDetails?.user;
       if (userDets?.role === "Staff" || userDets?.role === "Hod") {
         navigate("/");
@@ -34,41 +42,56 @@ function Login() {
       } else if (userDets?.role === "Admin") {
         navigate("/admin");
       }
-    } else {
-      alert("Wrong credentials, please confirm with the admin.");
+    } else if (user.email && user.password) {
+      toast.error("Wrong credentials");
     }
+  };
+  const validate = (values) => {
+    const errors = {};
+    if (!values.email) {
+      errors.email = "Email is required";
+    }
+    if (!values.password) {
+      errors.password = "Password is required";
+    }
+    return errors;
   };
 
   return (
     <div className="loginContainer">
       <div className="container container2 ">
-        <Form onSubmit={handleOnSubmit}>
-          <Form.Group className="mb-3 " controlId="formBasicEmail">
-            <Form.Label>Email address</Form.Label>
-            <Form.Control
+        <form className="requires-validation" onSubmit={handleOnSubmit}>
+          <div className="mb-3">
+            <label htmlFor="exampleInputEmail1" className="form-label">
+              Email address <span className="text-danger"> *</span>
+            </label>
+            <input
               type="email"
               name="email"
-              required
               onChange={handleOnChange}
-              placeholder="Enter email"
+              className="form-control"
+              id="exampleInputEmail1"
+              aria-describedby="emailHelp"
             />
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="formBasicPassword">
-            <Form.Label>Password</Form.Label>
-            <Form.Control
+            <p className="text-danger">{formErrors.email}</p>
+          </div>
+          <div className="mb-3">
+            <label htmlFor="exampleInputPassword1" className="form-label">
+              Password <span className="text-danger"> *</span>
+            </label>
+            <input
               type="password"
-              required
-              onChange={handleOnChange}
               name="password"
-              placeholder="Password"
+              onChange={handleOnChange}
+              className="form-control"
+              id="exampleInputPassword1"
             />
-          </Form.Group>
-
-          <Button variant="primary" type="submit">
-            Submit
-          </Button>
-        </Form>
+            <p className="text-danger">{formErrors.password}</p>
+          </div>
+          <button type="submit" className="btn btn-primary">
+            Login
+          </button>
+        </form>
       </div>
     </div>
   );

@@ -1,5 +1,4 @@
 import React from "react";
-import NavBar from "../../components/NavBar";
 import "../../index.css";
 import { useContext, useEffect } from "react";
 import { Table } from "react-bootstrap";
@@ -11,7 +10,19 @@ function Principal() {
 
   const userContext = useContext(LeaveContext);
 
-  const { requestesForPrincipal, requestesForPrincipalArr } = userContext;
+  const { userArr, getusers } = userContext;
+
+  useEffect(() => {
+    if (userDets?.role !== "Principal" || localUserDetails === null) {
+      navigate("/login");
+    }
+    // eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
+    getusers();
+    // eslint-disable-next-line
+  }, []);
 
   const localUserDetails = JSON.parse(localStorage.getItem("storedUser"));
   const userDets = localUserDetails?.user;
@@ -21,37 +32,43 @@ function Principal() {
     }
     // eslint-disable-next-line
   }, []);
-  useEffect(() => {
-    requestesForPrincipal();
-    // eslint-disable-next-line
-  }, []);
 
   return (
     <>
-      <NavBar />
-      <div className="container my-5">
-        <h1>Incoming leave applications</h1>
+      <div className="container">
+        <h1>Jain College of Engineering Staff Details</h1>
         <Table striped bordered hover>
           <thead>
-            <tr className="theads">
+            <tr>
+              <th>Staff ID</th>
               <th>Full Name</th>
-              <th>Subject</th>
-              <th>Start date</th>
-              <th>End date</th>
-              <th>Accept/Decline</th>
+              <th>Email </th>
+              <th>Phone Number</th>
+              <th>Role</th>
+              <th>Type</th>
+              <th>Leaves remaining</th>
+              <th>Department</th>
             </tr>
           </thead>
           <tbody>
-            {requestesForPrincipalArr.map((leaveReq) => {
+            {userArr.map((user) => {
               return (
-                <tr key={leaveReq._id}>
-                  <td className="center">{leaveReq.name}</td>
-                  <td className="center">{leaveReq.subject}</td>
-                  <td className="center">
-                    {new Date(leaveReq.dateStart).toDateString()}
+                <tr key={user.staffId}>
+                  <td>{user.staffId}</td>
+                  <td>{user.staffName}</td>
+                  <td>{user.email}</td>
+                  <td>{user.phnumber}</td>
+                  <td>{user.role}</td>
+                  <td>{user.type}</td>
+                  <td>
+                    {user.type === "Regular" ? (
+                      <span>{user.earnedLeaves + user.regularStaffLeaves}</span>
+                    ) : (
+                      <span>{user.probationStaffLeaves}</span>
+                    )}
                   </td>
-                  <td className="center">
-                    {new Date(leaveReq.dateEnd).toDateString()}
+                  <td>
+                    <span>{user.department}</span>{" "}
                   </td>
                 </tr>
               );

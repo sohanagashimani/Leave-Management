@@ -7,11 +7,20 @@ import Hodrequests from "./pages/admin/Hodrequests";
 import CreateLeave from "./pages/staff/CreateLeave";
 import UserProfile from "./pages/profile/UserProfile";
 import NavBar from "./components/NavBar";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   // hello
   return (
     <>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+      />
       <Router>
         <NavBar />
         <Routes>

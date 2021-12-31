@@ -20,6 +20,7 @@ const LeaveSchema = new mongoose.Schema(
     },
     type: {
       type: String,
+      required: true,
     },
     body: {
       type: String,
@@ -50,7 +51,8 @@ const LeaveSchema = new mongoose.Schema(
       default: 0,
     },
     noOfDays: {
-      type: Number
+      type: Number,
+      required: true,
     },
   },
   {

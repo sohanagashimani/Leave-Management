@@ -19,7 +19,7 @@ router.post("/", async (req, res) => {
       noOfDays: req.body.noOfDays,
     });
     const savedLeave = await newLeave.save();
-    res.status(200).json(savedLeave);
+    res.status(200).json({ savedLeave, msg: "Leave request sent" });
   } catch (err) {
     res.status(500).json(err);
   }
@@ -60,14 +60,18 @@ router.get("/staff/:staffname", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const user = await Staff.find({ role: "Hod" });
+    if (!user) return res.status(200).send("no hods found");
 
     const reqForAdmin = await Promise.all(
       user.map((i) => {
         return Leave.find({ userId: i._id, byStaff: 1 });
       })
     );
-
-    res.status(200).json(reqForAdmin[0]);
+    if (reqForAdmin.length !== 0) {
+      return res.status(200).json(reqForAdmin[0]);
+    } else {
+      return res.status(200).send([]);
+    }
   } catch (err) {
     return res.status(500).json(err);
   }
@@ -124,7 +128,7 @@ router.put("/:leaveId/:byStaff/:role/:leaveCount", async (req, res) => {
       }
       return res.status(200).json("leave status approved");
     } else if (req.params.role === "Admin") {
-      const leave = await Leave.findByIdAndUpdate(req.params.leaveId, {
+      await Leave.findByIdAndUpdate(req.params.leaveId, {
         byAdmin: req.params.byStaff,
       });
       const leaveStatus = await Leave.findById(req.params.leaveId);

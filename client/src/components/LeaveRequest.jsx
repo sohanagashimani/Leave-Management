@@ -4,10 +4,7 @@ import LeaveContext from "../context/LeaveContext";
 import "../index.css";
 import DeleteOutlineTwoToneIcon from "@mui/icons-material/DeleteOutlineTwoTone";
 import { useNavigate } from "react-router-dom";
-
-// import CheckCircleOutlineTwoToneIcon from "@mui/icons-material/CheckCircleOutlineTwoTone";
-// import CancelTwoToneIcon from "@mui/icons-material/CancelTwoTone";
-
+import { toast } from "react-toastify";
 function LeaveRequest() {
   const localUserDetails = JSON.parse(localStorage.getItem("storedUser"));
   const userDets = localUserDetails?.user;
@@ -29,7 +26,6 @@ function LeaveRequest() {
   } = userContext;
   useEffect(() => {
     if (!userDets) {
-      console.log("jfsd");
       navigate("/login");
     }
     // eslint-disable-next-line
@@ -37,8 +33,10 @@ function LeaveRequest() {
 
   useEffect(() => {
     // console.log(requestedLeavesArr);
-    recievedRequests(userDets?.staffName);
-    myRequestedLeaves(userDets?._id);
+    if (userDets) {
+      recievedRequests(userDets?.staffName);
+      myRequestedLeaves(userDets?._id);
+    }
     if (userDets?.role === "Hod") {
       requestesForHod(userDets?.department);
     }
@@ -163,7 +161,6 @@ function LeaveRequest() {
                     {leaveReq.byStaff === 0 ? (
                       <button
                         type="button"
-                        // ref={ref}
                         className="btn btn-primary "
                         data-bs-toggle="modal"
                         data-bs-target="#bbb"
@@ -239,8 +236,12 @@ function LeaveRequest() {
                                 staffStatus(
                                   modalDetails?._id,
                                   1,
-                                  userDets?.role
+                                  userDets?.role,
+                                  modalDetails?.noOfDays
                                 );
+
+                                setuserChange(!userChange);
+                                toast.info("Accepted");
                               }}
                             >
                               Accept
@@ -253,8 +254,12 @@ function LeaveRequest() {
                                 staffStatus(
                                   modalDetails?._id,
                                   2,
-                                  userDets?.role
+                                  userDets?.role,
+                                  modalDetails?.noOfDays
                                 );
+                                setuserChange(!userChange);
+
+                                toast.info("Declined");
                               }}
                             >
                               Decline
@@ -365,8 +370,11 @@ function LeaveRequest() {
                                 staffStatus(
                                   modalDetails._id,
                                   1,
-                                  userDets?.role
+                                  userDets?.role,
+                                  modalDetails?.noOfDays
                                 );
+                                setuserChange(!userChange);
+                                toast.info("Accepted");
                               }}
                             >
                               Accept
@@ -379,8 +387,11 @@ function LeaveRequest() {
                                 staffStatus(
                                   modalDetails._id,
                                   2,
-                                  userDets?.role
+                                  userDets?.role,
+                                  modalDetails?.noOfDays
                                 );
+                                setuserChange(!userChange);
+                                toast.info("Declined");
                               }}
                             >
                               Decline

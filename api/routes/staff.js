@@ -27,13 +27,12 @@ router.put("/:id", async (req, res) => {
           .status(200)
           .json({ message: "acccount has been updated", success: true });
       } catch (err) {
-        console.log("sdljfl");
         return res.status(500).json(err);
       }
     } else {
       return res
-        .status(401)
-        .json({ message: "incorrect old password", success: false });
+        .status(200)
+        .json({ message: "Incorrect Password", success: false });
     }
   } else {
     return res
@@ -59,7 +58,7 @@ router.delete("/:id", async (req, res) => {
     const user = await Staff.findByIdAndDelete(req.params.id);
     res.status(200).json("acccount has been deleted successfully");
   } catch (err) {
-    return res.status(500).json(err);
+    return res.status(500).json(err, "Internal server error");
   }
 });
 

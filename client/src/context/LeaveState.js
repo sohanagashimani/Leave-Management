@@ -9,7 +9,6 @@ function LeaveState(props) {
   const [requestesForHodArr, setRequestesForHodArr] = useState([]);
   const [requestsForAdminArr, setRequestsForAdminArr] = useState([]);
 
-
   const getusers = async () => {
     try {
       const users = await axios.get(
@@ -22,15 +21,16 @@ function LeaveState(props) {
   };
   const postLeaveDetails = async (leave) => {
     try {
-      axios.post("http://localhost:4000/api/leave/", leave);
+      const json = await axios.post("http://localhost:4000/api/leave/", leave);
+
+      return json.data;
     } catch (error) {
       console.log(error);
     }
   };
   const staffStatus = async (leaveId, status, role, leaveCount) => {
     try {
-      console.log("insideeeeee");
-      axios.put(
+      await axios.put(
         `http://localhost:4000/api/leave/${leaveId}/${status}/${role}/${leaveCount}`
       );
     } catch (error) {
@@ -39,7 +39,9 @@ function LeaveState(props) {
   };
   const deleteUser = async (id) => {
     try {
-      await axios.delete(`http://localhost:4000/api/staff/${id}`);
+      const json = await axios.delete(`http://localhost:4000/api/staff/${id}`);
+
+      return json.data;
     } catch (error) {
       console.log(error);
     }
@@ -99,7 +101,6 @@ function LeaveState(props) {
         userDetails
       );
       localStorage.setItem("storedUser", JSON.stringify(loggedUser.data));
-
     } catch (err) {
       console.log(err);
     }
@@ -123,7 +124,6 @@ function LeaveState(props) {
         requestsForAdminArr,
         login,
         deleteLeave,
-
       }}
     >
       {props.children}

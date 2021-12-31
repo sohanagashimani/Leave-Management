@@ -3,6 +3,7 @@ import { Button, FloatingLabel, Form } from "react-bootstrap";
 import LeaveContext from "../../context/LeaveContext";
 import "../../index.css";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function CreateLeave() {
   const localUserDetails = JSON.parse(localStorage.getItem("storedUser"));
@@ -14,6 +15,8 @@ function CreateLeave() {
   const [dateStartState, setDateStartState] = useState(null);
   const [isEndDateDisabled, setIsEndDateDisabled] = useState(true);
   const [isSubmitDisabled, setisSubmitDisabled] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
+
   const [leaveData, setLeaveData] = useState({
     userId: userDets?._id,
     department: userDets?.department,
@@ -69,22 +72,64 @@ function CreateLeave() {
     // eslint-disable-next-line
   }, []);
   useEffect(() => {
-    getusers();
+    if (userDets) getusers();
     // eslint-disable-next-line
   }, [userChange]);
   const userContext = useContext(LeaveContext);
   const { userArr, getusers, postLeaveDetails } = userContext;
-  const sendLeaveDetails = (e) => {
-    e.preventDefault();
 
-    console.log(leaveData);
-    postLeaveDetails(leaveData);
+  const sendLeaveDetails = async (e) => {
+    e.preventDefault();
+    setFormErrors(validate(leaveData));
+    if (
+      !(
+        leaveData.subject &&
+        leaveData.body &&
+        leaveData.type &&
+        leaveData.dateStart &&
+        leaveData.dateEnd &&
+        leaveData.subStaff
+      )
+    )
+      return;
+
+    const res = await postLeaveDetails(leaveData);
+    console.log(res);
+    if (res) {
+      toast.success(res.msg);
+    } else {
+      toast.error("Internal server error");
+    }
+
     setuserChange(!userChange);
     clearFields(e);
+  };
+  const validate = (values) => {
+    const errors = {};
+    if (!values.subject) {
+      errors.subject = "Subject is required";
+    }
+    if (!values.type) {
+      errors.type = "Type is required";
+    }
+    if (!values.body) {
+      errors.body = "Description is required";
+    }
+    if (!values.dateStart) {
+      errors.dateStart = "Start date is required";
+    }
+    if (!values.subStaff) {
+      errors.subStaff = "Substitue staff is required";
+    }
+    if (!values.dateEnd) {
+      errors.dateEnd = "End date is required";
+    }
+    return errors;
   };
 
   const changeInputHandler = (e) => {
     setLeaveData({ ...leaveData, [e.target.name]: e.target.value });
+
     if (e.target.name === "dateEnd") {
       setDateEndState(e.target.value);
     }
@@ -92,18 +137,24 @@ function CreateLeave() {
       setDateStartState(e.target.value);
     }
   };
+
   const filteredArr = userArr.filter(
     (user) => user?.role === "Staff" && user?.staffName !== userDets?.staffName
   );
   const clearFields = (e) => {
     Array.from(e.target).forEach((e) => (e.value = ""));
-    setLeaveData({});
+    setLeaveData({
+      userId: userDets?._id,
+      department: userDets?.department,
+      name: userDets?.staffName,
+    });
+    setTotalLeaveDays(0);
   };
 
   return (
     <>
       {userDets.type === "Regular" ? (
-        userDets.regularStaffLeaves || userDets.earnedLeaves !== 0 ? (
+        userDets.regularStaffLeaves + userDets.earnedLeaves !== 0 ? (
           <div className="container leaveForm">
             <h1>Apply for a new leave</h1>
             <hr />
@@ -118,6 +169,7 @@ function CreateLeave() {
                   onChange={changeInputHandler}
                   type="text"
                 />
+                <p className="text-danger">{formErrors.subject}</p>
               </Form.Group>
               <Form.Group
                 className="mb-3"
@@ -130,6 +182,7 @@ function CreateLeave() {
                   rows={3}
                   name="body"
                 />
+                <p className="text-danger">{formErrors.body}</p>
               </Form.Group>
               <Form.Label className="fs-3">Type of leave</Form.Label>
               <FloatingLabel
@@ -147,6 +200,7 @@ function CreateLeave() {
                   <option value={"Casual"}>Casual</option>
                   <option value={"Earned"}>Earned</option>
                 </Form.Select>
+                <p className="text-danger">{formErrors.type}</p>
               </FloatingLabel>
               <div>
                 <label className="me-2 fs-4">Start date:</label>
@@ -156,6 +210,8 @@ function CreateLeave() {
                   className="mb-1"
                   type="date"
                 />
+                <span className="text-danger">{formErrors.dateStart}</span>
+
                 <label className=" ms-2 fs-4">End date:</label>
                 <input
                   name="dateEnd"
@@ -164,6 +220,8 @@ function CreateLeave() {
                   type="date"
                   disabled={isEndDateDisabled}
                 />
+                <span className="text-danger">{formErrors.dateEnd}</span>
+
                 <label className=" ms-2 fs-4">
                   Number of days: {totalLeaveDays}
                 </label>
@@ -193,6 +251,7 @@ function CreateLeave() {
                     );
                   })}
                 </Form.Select>
+                <p className="text-danger">{formErrors.subStaff}</p>
               </FloatingLabel>
 
               <Button
@@ -206,7 +265,7 @@ function CreateLeave() {
             </Form>
           </div>
         ) : (
-          "fjlds"
+          "No leaves remaining"
         )
       ) : userDets.probationStaffLeaves !== 0 ? (
         <div className="container leaveForm">
@@ -220,6 +279,7 @@ function CreateLeave() {
                 onChange={changeInputHandler}
                 type="text"
               />
+              <p className="text-danger">{formErrors.subject}</p>
             </Form.Group>
             <Form.Group
               className="mb-3"
@@ -232,6 +292,7 @@ function CreateLeave() {
                 rows={3}
                 name="body"
               />
+              <p className="text-danger">{formErrors.body}</p>
             </Form.Group>
             <Form.Label className="fs-3">Type of leave</Form.Label>
             <FloatingLabel
@@ -249,6 +310,7 @@ function CreateLeave() {
                 <option value={"Casual"}>Casual</option>
                 <option value={"Earned"}>Earned</option>
               </Form.Select>
+              <p className="text-danger">{formErrors.type}</p>
             </FloatingLabel>
             <div>
               <label className="me-2 fs-4">Start date:</label>
@@ -258,6 +320,8 @@ function CreateLeave() {
                 className="mb-1"
                 type="date"
               />
+              <p className="text-danger">{formErrors.dateStart}</p>
+
               <label className=" ms-2 fs-4">End date:</label>
               <input
                 name="dateEnd"
@@ -266,6 +330,8 @@ function CreateLeave() {
                 type="date"
                 disabled={isEndDateDisabled}
               />
+              <p className="text-danger">{formErrors.dateEnd}</p>
+
               <label className=" ms-2 fs-4">
                 Number of days: {totalLeaveDays}
               </label>
@@ -291,6 +357,7 @@ function CreateLeave() {
                   );
                 })}
               </Form.Select>
+              <p className="text-danger">{formErrors.subStaff}</p>
             </FloatingLabel>
 
             <Button
