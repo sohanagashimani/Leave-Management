@@ -48,7 +48,8 @@ function LeaveState(props) {
   };
   const deleteLeave = async (id) => {
     try {
-      await axios.delete(`http://localhost:4000/api/leave/${id}`);
+      const json = await axios.delete(`http://localhost:4000/api/leave/${id}`);
+      return json.data;
     } catch (error) {
       console.log(error);
     }

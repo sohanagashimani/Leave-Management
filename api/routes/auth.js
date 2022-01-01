@@ -23,7 +23,7 @@ router.post(
           { phnumber: req.body.phnumber },
         ],
       });
-      console.log(user);
+      
       if (user) {
         if (user.email === req.body.email) {
           return res.status(200).json({
@@ -60,7 +60,7 @@ router.post(
         joiningDate: dt,
         tempDate: dt,
       });
-      // console.log(newUser);
+    
       // save user and send response
       const saved = await user.save();
       success = true;
@@ -141,12 +141,14 @@ router.post("/login", async (req, res) => {
       return res.status(200).json({ user, success: true });
     } else if (user.type === "Regular") {
       const currentDate = new Date();
-      const currentYear = new Date().getFullYear();
-      const tempYear = user.tempDate.getFullYear();
-      const yearChange = currentYear - tempYear;
+      const tempDate = new Date(user.tempDate);
+      const totalSeconds = (currentDate - tempDate) / 1000;
+      const days = Math.floor(totalSeconds / 3600 / 24);
+      console.log(tempDate, currentDate, days);
+      const yearChange = days;
 
-      if (yearChange !== 0) {
-        const updatedEarnedLeaves = yearChange * (user.earnedLeaves + 10);
+      if (yearChange >= 365) {
+        const updatedEarnedLeaves = user.earnedLeaves + 10;
         await Staff.findByIdAndUpdate(user._id, {
           tempDate: currentDate,
           earnedLeaves: updatedEarnedLeaves,

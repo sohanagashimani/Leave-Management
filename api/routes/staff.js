@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const Leave = require("../models/Leave");
 // update a user
 router.put("/:id", async (req, res) => {
-  if (req.body.oldPassword) {
+  if (req.body.oldPassword && req.body.password) {
     let user = await Staff.findById(req.params.id);
     const validPassword = await bcrypt.compare(
       req.body.oldPassword,
@@ -15,20 +15,15 @@ router.put("/:id", async (req, res) => {
         try {
           const salt = await bcrypt.genSalt(10);
           req.body.password = await bcrypt.hash(req.body.password, salt);
+          user = await Staff.findByIdAndUpdate(req.params.id, {
+            password: req.body.password,
+          });
+          return res
+            .status(200)
+            .json({ message: "acccount has been updated", success: true });
         } catch (err) {
           return res.status(500).json(err);
         }
-      }
-      try {
-        user = await Staff.findByIdAndUpdate(req.params.id, {
-          password: req.body.password,
-        });
-
-        return res
-          .status(200)
-          .json({ message: "acccount has been updated", success: true });
-      } catch (err) {
-        return res.status(500).json(err);
       }
     } else {
       return res
@@ -38,7 +33,7 @@ router.put("/:id", async (req, res) => {
   } else {
     return res
       .status(200)
-      .json({ message: "please enter old password", success: false });
+      .json({ message: "Please check the credentials", success: false });
   }
 });
 
@@ -46,7 +41,7 @@ router.put("/:id", async (req, res) => {
 router.get("/fetchusers", async (req, res) => {
   try {
     const users = await Staff.find({}, { password: 0, isAdmin: 0 });
-    // console.log(users[0])
+
     res.status(200).json(users);
   } catch (err) {
     return res.status(500).json(err);

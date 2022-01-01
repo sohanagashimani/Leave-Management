@@ -43,14 +43,20 @@ function LeaveRequest() {
     // eslint-disable-next-line
   }, [userChange]);
 
-  const deleteUserFrontend = (leaveReq) => {
-    deleteLeave(leaveReq._id);
-    setuserChange(!userChange);
-  };
   let count = 0;
 
   const populateModal = (modalDeets) => {
     setModalDetails(modalDeets);
+  };
+  const deleteLeaveReq = async (leaveReq) => {
+    const deleteResponse = await deleteLeave(leaveReq._id);
+    console.log(deleteResponse);
+    if (deleteResponse.success) {
+      toast.success(deleteResponse.msg);
+    } else {
+      toast.error("internal server error");
+    }
+    setuserChange(!userChange);
   };
   return (
     <div
@@ -71,7 +77,7 @@ function LeaveRequest() {
                 <th>From</th>
                 <th>To</th>
                 <th>Staff-status</th>
-                {userDets.role === "Staff" ? (
+                {userDets?.role === "Staff" ? (
                   <th>Hod-status</th>
                 ) : (
                   <th>Admin-status</th>
@@ -99,22 +105,34 @@ function LeaveRequest() {
                       )}
                     </td>
                     <td>
-                      {userDets.role !== "Hod"
-                        ? leaveReq.byHod === 0
+                      {userDets.role === "Staff"
+                        ? leaveReq.byHod === 0 && (
+                            <span className="text-warning fw-bold">
+                              Pending...
+                            </span>
+                          )
                         : leaveReq.byAdmin === 0 && (
                             <span className="text-warning fw-bold">
                               Pending...
                             </span>
                           )}
-                      {userDets.role !== "Hod"
-                        ? leaveReq.byHod === 1
+                      {userDets.role === "Staff"
+                        ? leaveReq.byHod === 1 && (
+                            <span className="text-success fw-bold">
+                              Approved
+                            </span>
+                          )
                         : leaveReq.byAdmin === 1 && (
                             <span className="text-success fw-bold">
                               Approved
                             </span>
                           )}
                       {userDets.role !== "Hod"
-                        ? leaveReq.byHod === 2
+                        ? leaveReq.byHod === 2 && (
+                            <span className="text-danger fw-bold">
+                              Declined
+                            </span>
+                          )
                         : leaveReq.byAdmin === 2 && (
                             <span className="text-danger fw-bold">
                               Declined
@@ -122,14 +140,13 @@ function LeaveRequest() {
                           )}
                     </td>
                     <td
-                      onClick={() => deleteUserFrontend(leaveReq)}
                       style={{
                         display: "flex",
                         justifyContent: "space-between",
                         cursor: "pointer",
                       }}
                     >
-                      <span>
+                      <span onClick={() => deleteLeaveReq(leaveReq)}>
                         <DeleteOutlineTwoToneIcon />
                       </span>
                     </td>

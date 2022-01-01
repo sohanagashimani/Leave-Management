@@ -94,7 +94,7 @@ function CreateLeave() {
       return;
 
     const res = await postLeaveDetails(leaveData);
-    console.log(res);
+
     if (res) {
       toast.success(res.msg);
     } else {

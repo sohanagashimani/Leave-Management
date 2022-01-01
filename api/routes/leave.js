@@ -29,7 +29,9 @@ router.post("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     await Leave.findByIdAndDelete(req.params.id);
-    res.status(200).json("Leave has been deleted successfully");
+    res
+      .status(200)
+      .json({ msg: "Leave has been deleted successfully", success: true });
   } catch (err) {
     return res.status(500).json(err);
   }

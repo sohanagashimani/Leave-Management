@@ -104,6 +104,7 @@ function Create() {
   };
 
   const deleteUserFrontend = async (user) => {
+    console.log(user);
     const deleteResponse = await deleteUser(user._id);
     if (deleteResponse) {
       toast.success(deleteResponse);
@@ -327,15 +328,14 @@ function Create() {
                         )}
                       </td>
                       <td
-                        onClick={() => deleteUserFrontend(user)}
                         style={{
                           display: "flex",
                           justifyContent: "space-between",
                           cursor: "pointer",
                         }}
                       >
-                        <span>{user.department}</span>{" "}
-                        <span>
+                        <span>{user.department}</span>
+                        <span onClick={() => deleteUserFrontend(user)}>
                           <DeleteOutlineTwoToneIcon />
                         </span>
                       </td>
