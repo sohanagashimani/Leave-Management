@@ -1,4 +1,5 @@
 import axios from "axios";
+
 import { useState } from "react";
 import LeaveContext from "./LeaveContext";
 
@@ -28,11 +29,12 @@ function LeaveState(props) {
       console.log(error);
     }
   };
-  const staffStatus = async (leaveId, status, role, leaveCount) => {
+  const staffStatus = async (leaveId, status, role, leaveCount, staffName) => {
     try {
-      await axios.put(
-        `http://localhost:4000/api/leave/${leaveId}/${status}/${role}/${leaveCount}`
+      const json = await axios.put(
+        `http://localhost:4000/api/leave/${leaveId}/${status}/${role}/${leaveCount}/${staffName}`
       );
+      return json.data;
     } catch (error) {
       console.log(error);
     }
@@ -99,9 +101,25 @@ function LeaveState(props) {
     try {
       const loggedUser = await axios.post(
         "http://localhost:4000/api/auth/login",
-        userDetails
+        userDetails,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
       localStorage.setItem("storedUser", JSON.stringify(loggedUser.data));
+      return loggedUser.data;
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const getAllLeaves = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:4000/api/leave/principal/allLeaves`
+      );
+      return res.data;
     } catch (err) {
       console.log(err);
     }
@@ -125,6 +143,7 @@ function LeaveState(props) {
         requestsForAdminArr,
         login,
         deleteLeave,
+        getAllLeaves,
       }}
     >
       {props.children}

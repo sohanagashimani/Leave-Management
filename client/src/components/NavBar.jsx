@@ -10,7 +10,6 @@ import "react-toastify/dist/ReactToastify.css";
 
 function NavBar() {
   const navigate = useNavigate();
-
   const localUserDetails = JSON.parse(localStorage.getItem("storedUser"));
   useEffect(() => {
     if (!localUserDetails) {
@@ -40,7 +39,6 @@ function NavBar() {
     setPasswordDetails({ ...passwordDetails, [e.target.name]: e.target.value });
   };
   const changePasswordSubmit = async (e) => {
-    
     setFormErrors(validate(passwordDetails));
     if (passwordAgain.current.value !== password.current.value) {
       toast.warning("New passwords do not match");

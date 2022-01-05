@@ -4,6 +4,8 @@ import LeaveContext from "../../context/LeaveContext";
 import "../../index.css";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import React from "react";
+import { MultiSelect } from "react-multi-select-component";
 
 function CreateLeave() {
   const localUserDetails = JSON.parse(localStorage.getItem("storedUser"));
@@ -15,13 +17,17 @@ function CreateLeave() {
   const [dateStartState, setDateStartState] = useState(null);
   const [isEndDateDisabled, setIsEndDateDisabled] = useState(true);
   const [isSubmitDisabled, setisSubmitDisabled] = useState(false);
+  const [selected, setSelected] = useState([]);
   const [formErrors, setFormErrors] = useState({});
-
+  const multipleSubStaff = [];
   const [leaveData, setLeaveData] = useState({
     userId: userDets?._id,
     department: userDets?.department,
     name: userDets?.staffName,
   });
+
+  //
+
   useEffect(() => {
     let start = new Date(leaveData.dateStart);
     let finish = new Date(leaveData.dateEnd);
@@ -49,7 +55,12 @@ function CreateLeave() {
 
     if (userDets.type === "Regular") {
       if (
-        totalLeaveDays > userDets.regularStaffLeaves &&
+        leaveData.type === "Casual" &&
+        totalLeaveDays > userDets.regularStaffLeaves
+      ) {
+        setisSubmitDisabled(true);
+      } else if (
+        leaveData.type === "Earned" &&
         totalLeaveDays > userDets.earnedLeaves
       ) {
         setisSubmitDisabled(true);
@@ -57,14 +68,17 @@ function CreateLeave() {
         setisSubmitDisabled(false);
       }
     } else if (userDets.type === "Probation") {
-      if (totalLeaveDays > userDets.probationStaffLeaves) {
+      if (
+        leaveData.type === "Casual" &&
+        totalLeaveDays > userDets.probationStaffLeaves
+      ) {
         setisSubmitDisabled(true);
       } else {
         setisSubmitDisabled(false);
       }
     }
     // eslint-disable-next-line
-  }, [dateEndState, dateStartState, totalLeaveDays]);
+  }, [dateEndState, dateStartState, totalLeaveDays, leaveData.type]);
   useEffect(() => {
     if (!userDets) {
       navigate("/login");
@@ -87,20 +101,16 @@ function CreateLeave() {
         leaveData.body &&
         leaveData.type &&
         leaveData.dateStart &&
-        leaveData.dateEnd &&
-        leaveData.subStaff
+        leaveData.dateEnd
       )
     )
       return;
-
     const res = await postLeaveDetails(leaveData);
-
     if (res) {
       toast.success(res.msg);
     } else {
       toast.error("Internal server error");
     }
-
     setuserChange(!userChange);
     clearFields(e);
   };
@@ -148,14 +158,34 @@ function CreateLeave() {
       department: userDets?.department,
       name: userDets?.staffName,
     });
+    setSelected([]);
     setTotalLeaveDays(0);
   };
+  //multiple select code:
+
+  const options = [];
+  filteredArr.map((user) => {
+    return options.push({
+      value: user.staffName,
+      label: user.staffName,
+    });
+  });
+
+  useEffect(() => {
+    selected.map((user) => {
+      return multipleSubStaff.push({ name: user.value, status: 0 });
+    });
+    setLeaveData({ ...leaveData, subStaffArr: multipleSubStaff });
+    // eslint-disable-next-line
+  }, [selected]);
 
   return (
     <>
       {userDets.type === "Regular" ? (
         userDets.regularStaffLeaves + userDets.earnedLeaves !== 0 ? (
           <div className="container leaveForm">
+            {/* multiple select related code:  */}
+
             <h1>Apply for a new leave</h1>
             <hr />
             <Form onSubmit={sendLeaveDetails}>
@@ -175,7 +205,13 @@ function CreateLeave() {
                 className="mb-3"
                 controlId="exampleForm.ControlTextarea1"
               >
-                <Form.Label className="fs-3">Description</Form.Label>
+                <Form.Label className="fs-3">
+                  Description{" "}
+                  <span className="fs-6">
+                    (Enter all the details of the leave including the reason and
+                    timings for substitute teachers)
+                  </span>
+                </Form.Label>
                 <Form.Control
                   onChange={changeInputHandler}
                   as="textarea"
@@ -198,7 +234,11 @@ function CreateLeave() {
                   required
                   <option value={"Duty"}>Duty</option>
                   <option value={"Casual"}>Casual</option>
-                  <option value={"Earned"}>Earned</option>
+                  {userDets.type === "Regular" ? (
+                    <option value={"Earned"}>Earned</option>
+                  ) : (
+                    ""
+                  )}
                 </Form.Select>
                 <p className="text-danger">{formErrors.type}</p>
               </FloatingLabel>
@@ -218,6 +258,7 @@ function CreateLeave() {
                   onChange={changeInputHandler}
                   className="mb-1"
                   type="date"
+                  min={leaveData.dateStart}
                   disabled={isEndDateDisabled}
                 />
                 <span className="text-danger">{formErrors.dateEnd}</span>
@@ -231,29 +272,13 @@ function CreateLeave() {
                   name="noOfDays"
                 ></span>
               </div>
-
-              <FloatingLabel
-                className="mt-3"
-                controlId="floatingSelect"
-                label="Select a substitute staff"
-              >
-                <Form.Select
-                  name="subStaff"
-                  onChange={changeInputHandler}
-                  aria-label="Floating label select example"
-                >
-                  <option></option>
-                  {filteredArr.map((user) => {
-                    return (
-                      <option key={user.staffId} value={user.staffName}>
-                        {user.staffName}
-                      </option>
-                    );
-                  })}
-                </Form.Select>
-                <p className="text-danger">{formErrors.subStaff}</p>
-              </FloatingLabel>
-
+              <label className=" my-2 fs-4">Select substitute staff: </label>
+              <MultiSelect
+                options={options}
+                value={selected}
+                hasSelectAll={false}
+                onChange={setSelected}
+              />
               <Button
                 variant="primary"
                 disabled={isSubmitDisabled}
@@ -269,6 +294,8 @@ function CreateLeave() {
         )
       ) : userDets.probationStaffLeaves !== 0 ? (
         <div className="container leaveForm">
+          {/* multiple select related code:  */}
+
           <h1>Apply for a new leave</h1>
           <hr />
           <Form onSubmit={sendLeaveDetails}>
@@ -285,7 +312,13 @@ function CreateLeave() {
               className="mb-3"
               controlId="exampleForm.ControlTextarea1"
             >
-              <Form.Label className="fs-3">Description</Form.Label>
+              <Form.Label className="fs-3">
+                Description{" "}
+                <span className="fs-6">
+                  (Enter all the details of the leave including the reason and
+                  timings for substitute teachers)
+                </span>
+              </Form.Label>
               <Form.Control
                 onChange={changeInputHandler}
                 as="textarea"
@@ -308,7 +341,11 @@ function CreateLeave() {
                 required
                 <option value={"Duty"}>Duty</option>
                 <option value={"Casual"}>Casual</option>
-                <option value={"Earned"}>Earned</option>
+                {userDets.type === "Regular" ? (
+                  <option value={"Earned"}>Earned</option>
+                ) : (
+                  ""
+                )}
               </Form.Select>
               <p className="text-danger">{formErrors.type}</p>
             </FloatingLabel>
@@ -320,7 +357,7 @@ function CreateLeave() {
                 className="mb-1"
                 type="date"
               />
-              <p className="text-danger">{formErrors.dateStart}</p>
+              <span className="text-danger">{formErrors.dateStart}</span>
 
               <label className=" ms-2 fs-4">End date:</label>
               <input
@@ -328,42 +365,27 @@ function CreateLeave() {
                 onChange={changeInputHandler}
                 className="mb-1"
                 type="date"
+                min={leaveData.dateStart}
                 disabled={isEndDateDisabled}
               />
-              <p className="text-danger">{formErrors.dateEnd}</p>
+              <span className="text-danger">{formErrors.dateEnd}</span>
 
               <label className=" ms-2 fs-4">
                 Number of days: {totalLeaveDays}
               </label>
               <span className="ms-2 fs-5" id="noOfDays" name="noOfDays"></span>
             </div>
-
-            <FloatingLabel
-              className="mt-3"
-              controlId="floatingSelect"
-              label="Select a substitute staff"
-            >
-              <Form.Select
-                name="subStaff"
-                onChange={changeInputHandler}
-                aria-label="Floating label select example"
-              >
-                <option></option>
-                {filteredArr.map((user) => {
-                  return (
-                    <option key={user.staffId} value={user.staffName}>
-                      {user.staffName}
-                    </option>
-                  );
-                })}
-              </Form.Select>
-              <p className="text-danger">{formErrors.subStaff}</p>
-            </FloatingLabel>
-
+            <label className=" my-2 fs-4">Select substitute staff: </label>
+            <MultiSelect
+              options={options}
+              value={selected}
+              hasSelectAll={false}
+              onChange={setSelected}
+            />
             <Button
               variant="primary"
-              className="mt-4"
               disabled={isSubmitDisabled}
+              className="mt-4"
               type="submit"
             >
               Submit

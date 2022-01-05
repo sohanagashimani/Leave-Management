@@ -1,6 +1,6 @@
 import React from "react";
 import "../../index.css";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
 import LeaveContext from "../../context/LeaveContext";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +10,10 @@ function Principal() {
 
   const userContext = useContext(LeaveContext);
 
-  const { userArr, getusers } = userContext;
+  const { userArr, getusers, getAllLeaves } = userContext;
+
+  const [allLeaves, setAllLeaves] = useState([]);
+  const [todaysLeaves, setTodaysLeaves] = useState([]);
 
   useEffect(() => {
     if (userDets?.role !== "Principal" || localUserDetails === null) {
@@ -19,13 +22,16 @@ function Principal() {
     // eslint-disable-next-line
   }, []);
 
-  useEffect(() => {
+  useEffect(async () => {
     getusers();
+    const response = await getAllLeaves();
+    setAllLeaves(response);
     // eslint-disable-next-line
   }, []);
 
   const localUserDetails = JSON.parse(localStorage.getItem("storedUser"));
   const userDets = localUserDetails?.user;
+
   useEffect(() => {
     if (userDets?.role !== "Principal") {
       navigate("/login");
@@ -33,10 +39,37 @@ function Principal() {
     // eslint-disable-next-line
   }, []);
 
+  const todaysDate = new Date();
+
+  let updatedArr = [];
+  allLeaves?.map((leave) => {
+    const startDateObj = new Date(leave.dateStart);
+    const endDateObj = new Date(leave.dateEnd);
+
+    if (
+      todaysDate.getDate() <= endDateObj.getDate() &&
+      todaysDate.getDate() >= startDateObj.getDate()
+    ) {
+      updatedArr.push(leave);
+    }
+  });
+
+  console.log(updatedArr);
+
   return (
     <>
-      <div className="container">
-        <h1>Jain College of Engineering Staff Details</h1>
+      <div className="container center">
+        <div className="card my-4" style={{ width: "18rem", margin: "auto" }}>
+          <div className="card-header">{new Date().toDateString()}</div>
+          <ul className="list-group list-group-flush">
+            <li className="list-group-item">
+              Number of staff on leave: {updatedArr.length}
+            </li>
+          </ul>
+        </div>
+        <h1 className="my-4 text-center">
+          Jain College of Engineering Staff Details
+        </h1>
         <Table striped bordered hover>
           <thead>
             <tr>

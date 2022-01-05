@@ -1,13 +1,5 @@
-earned leave bakend (done)
-populate leave remaining
-separate pages in navbar(done)
-admin and principal separation.(done)
-check leaves remaining
-principal page
-form validations
-admin form
-leavereq form
-principal page ka navbar update
-table and admin role updations
+view desc for staffs
+principal: staff on leave
+remove delete leave functionality
 styling
 testing

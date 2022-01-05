@@ -34,8 +34,8 @@ const LeaveSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
-    subStaff: {
-      type: String,
+    subStaffArr: {
+      type: Array,
       required: true,
     },
     byStaff: {

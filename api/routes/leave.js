@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const { findById } = require("../models/Leave");
 const Leave = require("../models/Leave");
 const Staff = require("../models/Staff");
 // create a leave request
@@ -10,11 +11,11 @@ router.post("/", async (req, res) => {
       department: req.body.department,
       type: req.body.type,
       body: req.body.body,
+      subStaffArr: req.body.subStaffArr,
       byStaff: req.body.byStaff,
       byHod: req.body.byHod,
       dateStart: req.body.dateStart,
       dateEnd: req.body.dateEnd,
-      subStaff: req.body.subStaff,
       name: req.body.name,
       noOfDays: req.body.noOfDays,
     });
@@ -48,29 +49,32 @@ router.get("/hod/:department", async (req, res) => {
     return res.status(500).json(err);
   }
 });
-// get staff specific leave requests
-router.get("/staff/:staffname", async (req, res) => {
-  try {
-    const leave = await Leave.find({ subStaff: req.params.staffname });
-    res.status(200).json(leave);
-  } catch (err) {
-    return res.status(500).json(err);
-  }
-});
 
 // get admin specific requests(hod's requests)
 router.get("/", async (req, res) => {
   try {
     const user = await Staff.find({ role: "Hod" });
-    if (!user) return res.status(200).send([], "no hods found");
 
+    if (!user) return res.status(200).send([], "no hods found");
+    const newArr = [];
     const reqForAdmin = await Promise.all(
       user.map((i) => {
         return Leave.find({ userId: i._id, byStaff: 1 });
       })
     );
-    if (reqForAdmin.length !== 0) {
-      return res.status(200).json(reqForAdmin[0]);
+    // console.log(reqForAdmin);
+
+    const updatedReqForAdmin = [];
+    reqForAdmin.map((request) => {
+      if (request.length !== 0) {
+        request.map((item) => {
+          updatedReqForAdmin.push(item);
+        });
+      }
+    });
+    console.log(updatedReqForAdmin);
+    if (updatedReqForAdmin.length !== 0) {
+      return res.status(200).json(updatedReqForAdmin);
     } else {
       return res.status(200).send([]);
     }
@@ -90,79 +94,135 @@ router.get("/:userId", async (req, res) => {
 });
 
 //accepted/dec by staff hod and admin
-router.put("/:leaveId/:byStaff/:role/:leaveCount", async (req, res) => {
-  try {
-    // console.log(req.params.role);
-    if (req.params.role === "Staff") {
-      const leave = await Leave.findByIdAndUpdate(req.params.leaveId, {
-        byStaff: req.params.byStaff,
-      });
-      return res.status(200).json("leave status provided");
-    } else if (req.params.role === "Hod") {
-      const leave = await Leave.findByIdAndUpdate(req.params.leaveId, {
-        byHod: req.params.byStaff,
-      });
-      const leaveStatus = await Leave.findById(req.params.leaveId);
-      const userId = await leaveStatus.userId;
-      const user = await Staff.findById(userId);
-      if (leaveStatus.byHod === 1 && leaveStatus.type === "Casual") {
-        if (user.type === "Regular") {
-          const updatedLeaves = user.regularStaffLeaves - req.params.leaveCount;
-          // console.log(updatedLeaves)
-          await Staff.findByIdAndUpdate(user._id, {
-            regularStaffLeaves: updatedLeaves,
-          });
+router.put(
+  "/:leaveId/:byStaff/:role/:leaveCount/:staffName",
+  async (req, res) => {
+    try {
+      // console.log(req.params.role);
+      if (req.params.role === "Staff") {
+        const leave = await Leave.findById(req.params.leaveId);
+        // console.log(leave);
+        leave.subStaffArr.map((user) => {
+          if (user.name === req.params.staffName) {
+            user.status = Number(req.params.byStaff);
+          }
+        });
+        // console.log(leave.subStaffArr);
+
+        await Leave.findByIdAndUpdate(req.params.leaveId, {
+          subStaffArr: leave.subStaffArr,
+        });
+        const byStaffApprovalBoolean = leave.subStaffArr.every(
+          (user) => user.status === 1
+        );
+        const byStaffDeclinedBoolean = leave.subStaffArr.some(
+          (user) => user.status === 2
+        );
+
+        if (byStaffApprovalBoolean) {
+          byStaffApproval = 1;
+        } else if (byStaffDeclinedBoolean) {
+          byStaffApproval = 2;
         } else {
-          const updatedLeaves =
-            user.probationStaffLeaves - req.params.leaveCount;
-          await Staff.findByIdAndUpdate(user._id, {
-            probationStaffLeaves: updatedLeaves,
-          });
+          byStaffApproval = 0;
         }
-      } else if (leaveStatus.byHod === 1 && leaveStatus.type === "Earned") {
-        if (user.type === "Regular") {
-          const updatedLeaves = user.earnedLeaves - req.params.leaveCount;
-          // console.log(updatedLeaves)
-          await Staff.findByIdAndUpdate(user._id, {
-            earnedLeaves: updatedLeaves,
-          });
+
+        await Leave.findByIdAndUpdate(req.params.leaveId, {
+          byStaff: byStaffApproval,
+        });
+        return res.status(200).json("leave status provided");
+      } else if (req.params.role === "Hod") {
+        const leave = await Leave.findByIdAndUpdate(req.params.leaveId, {
+          byHod: req.params.byStaff,
+        });
+        const leaveStatus = await Leave.findById(req.params.leaveId);
+        const userId = await leaveStatus.userId;
+        const user = await Staff.findById(userId);
+        if (leaveStatus.byHod === 1 && leaveStatus.type === "Casual") {
+          if (user.type === "Regular") {
+            const updatedLeaves =
+              user.regularStaffLeaves - req.params.leaveCount;
+            // console.log(updatedLeaves)
+            await Staff.findByIdAndUpdate(user._id, {
+              regularStaffLeaves: updatedLeaves,
+            });
+          } else {
+            const updatedLeaves =
+              user.probationStaffLeaves - req.params.leaveCount;
+            await Staff.findByIdAndUpdate(user._id, {
+              probationStaffLeaves: updatedLeaves,
+            });
+          }
+        } else if (leaveStatus.byHod === 1 && leaveStatus.type === "Earned") {
+          if (user.type === "Regular") {
+            const updatedLeaves = user.earnedLeaves - req.params.leaveCount;
+            // console.log(updatedLeaves)
+            await Staff.findByIdAndUpdate(user._id, {
+              earnedLeaves: updatedLeaves,
+            });
+          }
         }
+        return res.status(200).json("leave status approved");
+      } else if (req.params.role === "Admin") {
+        await Leave.findByIdAndUpdate(req.params.leaveId, {
+          byAdmin: req.params.byStaff,
+        });
+        const leaveStatus = await Leave.findById(req.params.leaveId);
+        const userId = await leaveStatus.userId;
+        const user = await Staff.findById(userId);
+        if (leaveStatus.byAdmin === 1 && leaveStatus.type === "Casual") {
+          if (user.type === "Regular") {
+            const updatedLeaves =
+              user.regularStaffLeaves - req.params.leaveCount;
+            // console.log(updatedLeaves)
+            await Staff.findByIdAndUpdate(user._id, {
+              regularStaffLeaves: updatedLeaves,
+            });
+          } else {
+            const updatedLeaves =
+              user.probationStaffLeaves - req.params.leaveCount;
+            await Staff.findByIdAndUpdate(user._id, {
+              probationStaffLeaves: updatedLeaves,
+            });
+          }
+        } else if (leaveStatus.byHod === 1 && leaveStatus.type === "Earned") {
+          if (user.type === "Regular") {
+            const updatedLeaves = user.earnedLeaves - req.params.leaveCount;
+            // console.log(updatedLeaves)
+            await Staff.findByIdAndUpdate(user._id, {
+              earnedLeaves: updatedLeaves,
+            });
+          }
+        }
+        return res.status(200).json("leave status approved");
       }
-      return res.status(200).json("leave status approved");
-    } else if (req.params.role === "Admin") {
-      await Leave.findByIdAndUpdate(req.params.leaveId, {
-        byAdmin: req.params.byStaff,
-      });
-      const leaveStatus = await Leave.findById(req.params.leaveId);
-      const userId = await leaveStatus.userId;
-      const user = await Staff.findById(userId);
-      if (leaveStatus.byAdmin === 1 && leaveStatus.type === "Casual") {
-        if (user.type === "Regular") {
-          const updatedLeaves = user.regularStaffLeaves - req.params.leaveCount;
-          // console.log(updatedLeaves)
-          await Staff.findByIdAndUpdate(user._id, {
-            regularStaffLeaves: updatedLeaves,
-          });
-        } else {
-          const updatedLeaves =
-            user.probationStaffLeaves - req.params.leaveCount;
-          await Staff.findByIdAndUpdate(user._id, {
-            probationStaffLeaves: updatedLeaves,
-          });
-        }
-      } else if (leaveStatus.byHod === 1 && leaveStatus.type === "Earned") {
-        if (user.type === "Regular") {
-          const updatedLeaves = user.earnedLeaves - req.params.leaveCount;
-          // console.log(updatedLeaves)
-          await Staff.findByIdAndUpdate(user._id, {
-            earnedLeaves: updatedLeaves,
-          });
-        }
-      }
-      return res.status(200).json("leave status approved");
+    } catch (error) {
+      return res.status(500).json(error);
     }
-  } catch (error) {
-    return res.status(500).json(error);
+  }
+);
+
+// get staff specific leave reqs
+router.get("/staff/:staffname", async (req, res) => {
+  try {
+    const leave = await Leave.find({
+      subStaffArr: { $elemMatch: { name: req.params.staffname } },
+    });
+    res.status(200).json(leave);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+});
+
+// get all leaves
+router.get("/principal/allLeaves", async (req, res) => {
+  try {
+    const allLeaves = await Leave.find({ $or: [{ byAdmin: 1 }, { byHod: 1 }] });
+    console.log(allLeaves);
+    return res.status(200).json(allLeaves);
+  } catch (err) {
+    console.log(res.status);
+    return res.status(500).json(err);
   }
 });
 

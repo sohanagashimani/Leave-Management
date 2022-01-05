@@ -30,20 +30,25 @@ function Login() {
     e.preventDefault();
     setFormErrors(validate(user));
     if (user.email && user.password) {
-      await login(user);
-    }
-    const localUserDetails = JSON.parse(localStorage.getItem("storedUser"));
-    if (localUserDetails?.success) {
-      const userDets = localUserDetails?.user;
-      if (userDets?.role === "Staff" || userDets?.role === "Hod") {
-        navigate("/");
-      } else if (userDets?.role === "Principal") {
-        navigate("/principal");
-      } else if (userDets?.role === "Admin") {
-        navigate("/admin");
+      const res = await login(user);
+
+      if (res) {
+        const localUserDetails = JSON.parse(localStorage.getItem("storedUser"));
+        if (localUserDetails?.success) {
+          const userDets = localUserDetails?.user;
+          if (userDets?.role === "Staff" || userDets?.role === "Hod") {
+            navigate("/");
+          } else if (userDets?.role === "Principal") {
+            navigate("/principal");
+          } else if (userDets?.role === "Admin") {
+            navigate("/admin");
+          }
+        } else if (user.email && user.password) {
+          toast.error("Wrong credentials");
+        }
+      } else {
+        toast.error("internal server error");
       }
-    } else if (user.email && user.password) {
-      toast.error("Wrong credentials");
     }
   };
   const validate = (values) => {

@@ -23,7 +23,7 @@ router.post(
           { phnumber: req.body.phnumber },
         ],
       });
-      
+
       if (user) {
         if (user.email === req.body.email) {
           return res.status(200).json({
@@ -60,7 +60,7 @@ router.post(
         joiningDate: dt,
         tempDate: dt,
       });
-    
+
       // save user and send response
       const saved = await user.save();
       success = true;
@@ -144,7 +144,7 @@ router.post("/login", async (req, res) => {
       const tempDate = new Date(user.tempDate);
       const totalSeconds = (currentDate - tempDate) / 1000;
       const days = Math.floor(totalSeconds / 3600 / 24);
-      console.log(tempDate, currentDate, days);
+      // console.log(tempDate, currentDate, days);
       const yearChange = days;
 
       if (yearChange >= 365) {
