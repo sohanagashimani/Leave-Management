@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { findById } = require("../models/Leave");
+
 const Leave = require("../models/Leave");
 const Staff = require("../models/Staff");
 // create a leave request
@@ -72,7 +72,7 @@ router.get("/", async (req, res) => {
         });
       }
     });
-    console.log(updatedReqForAdmin);
+
     if (updatedReqForAdmin.length !== 0) {
       return res.status(200).json(updatedReqForAdmin);
     } else {
@@ -218,7 +218,6 @@ router.get("/staff/:staffname", async (req, res) => {
 router.get("/principal/allLeaves", async (req, res) => {
   try {
     const allLeaves = await Leave.find({ $or: [{ byAdmin: 1 }, { byHod: 1 }] });
-    console.log(allLeaves);
     return res.status(200).json(allLeaves);
   } catch (err) {
     console.log(res.status);

@@ -1,20 +1,14 @@
 import React from "react";
 import "../../index.css";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { Table } from "react-bootstrap";
 import LeaveContext from "../../context/LeaveContext";
 import { useNavigate } from "react-router-dom";
 
 function Principal() {
   const navigate = useNavigate();
-
   const userContext = useContext(LeaveContext);
-
-  const { userArr, getusers, getAllLeaves } = userContext;
-
-  const [allLeaves, setAllLeaves] = useState([]);
-  const [todaysLeaves, setTodaysLeaves] = useState([]);
-
+  const { userArr, getusers, getAllLeaves, allLeavesArr } = userContext;
   useEffect(() => {
     if (userDets?.role !== "Principal" || localUserDetails === null) {
       navigate("/login");
@@ -22,10 +16,10 @@ function Principal() {
     // eslint-disable-next-line
   }, []);
 
-  useEffect(async () => {
+  useEffect(() => {
     getusers();
-    const response = await getAllLeaves();
-    setAllLeaves(response);
+    getAllLeaves();
+
     // eslint-disable-next-line
   }, []);
 
@@ -42,7 +36,7 @@ function Principal() {
   const todaysDate = new Date();
 
   let updatedArr = [];
-  allLeaves?.map((leave) => {
+  allLeavesArr?.forEach((leave) => {
     const startDateObj = new Date(leave.dateStart);
     const endDateObj = new Date(leave.dateEnd);
 
@@ -54,16 +48,16 @@ function Principal() {
     }
   });
 
-  console.log(updatedArr);
+  // console.log(updatedArr);
 
   return (
     <>
       <div className="container center">
-        <div className="card my-4" style={{ width: "18rem", margin: "auto" }}>
+        <div className="card my-4" style={{ width: "20rem", margin: "auto" }}>
           <div className="card-header">{new Date().toDateString()}</div>
           <ul className="list-group list-group-flush">
             <li className="list-group-item">
-              Number of staff on leave: {updatedArr.length}
+              Number of staff on leave today: {updatedArr.length}
             </li>
           </ul>
         </div>

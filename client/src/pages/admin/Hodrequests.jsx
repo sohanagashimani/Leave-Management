@@ -111,6 +111,9 @@ function Hodrequests() {
                               Description:<span>{modalDetails?.body}</span>
                             </h5>
                             <h5>
+                              Type:<span>{modalDetails?.type}</span>
+                            </h5>
+                            <h5>
                               From:
                               <span>
                                 {new Date(
@@ -125,8 +128,7 @@ function Hodrequests() {
                               </span>
                             </h5>
                             <h5>
-                              Substitue Staff:{" "}
-                              <span>{modalDetails?.subStaff}</span>
+                              No. of days:<span>{modalDetails?.noOfDays}</span>
                             </h5>
                           </div>
                           <div className="modal-footer">

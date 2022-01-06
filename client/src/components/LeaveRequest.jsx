@@ -4,6 +4,9 @@ import LeaveContext from "../context/LeaveContext";
 import "../index.css";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
+import PendingIcon from "@mui/icons-material/Pending";
+import CancelIcon from "@mui/icons-material/Cancel";
 function LeaveRequest() {
   const localUserDetails = JSON.parse(localStorage.getItem("storedUser"));
   const userDets = localUserDetails?.user;
@@ -48,7 +51,7 @@ function LeaveRequest() {
   const populateModal = (modalDeets) => {
     setModalDetails(modalDeets);
   };
-  const populateLeaveReqModal = (leaveReq) => {
+  const populateSubStaffDetailsModal = (leaveReq) => {
     setLeaveReqSubStaffDetails(leaveReq.subStaffArr);
   };
 
@@ -99,7 +102,9 @@ function LeaveRequest() {
                             className="btn btn-primary"
                             data-bs-toggle="modal"
                             data-bs-target="#byStaffApproval"
-                            onClick={() => populateLeaveReqModal(leaveReq)}
+                            onClick={() =>
+                              populateSubStaffDetailsModal(leaveReq)
+                            }
                           >
                             view
                           </button>
@@ -141,17 +146,17 @@ function LeaveRequest() {
                                           Status:
                                           {(item?.status === 1 && (
                                             <span className="text-success fw-bold">
-                                              Approved
+                                              <CheckCircleOutlineOutlinedIcon />
                                             </span>
                                           )) ||
                                             (item?.status === 0 && (
                                               <span className="text-warning fw-bold">
-                                                Pending
+                                                <PendingIcon />
                                               </span>
                                             )) ||
                                             (item?.status === 2 && (
                                               <span className="text-danger fw-bold">
-                                                Declined
+                                                <CancelIcon />
                                               </span>
                                             ))}
                                         </h5>
@@ -234,6 +239,12 @@ function LeaveRequest() {
                           <div className="modal-dialog">
                             <div className="modal-content">
                               <div className="modal-header">
+                                <h5
+                                  className="modal-title"
+                                  id="exampleModalLabel"
+                                >
+                                  Leave request details
+                                </h5>
                                 <button
                                   type="button"
                                   className="btn-close"
@@ -241,7 +252,10 @@ function LeaveRequest() {
                                   aria-label="Close"
                                 ></button>
                               </div>
-                              <div className="modal-body">
+                              <div
+                                className="modal-body"
+                                style={{ textAlign: "left" }}
+                              >
                                 <h5>
                                   Subject:
                                   <span>{detailedLeaveReq?.subject}</span>
@@ -269,6 +283,10 @@ function LeaveRequest() {
                                       detailedLeaveReq?.dateEnd
                                     ).toDateString()}
                                   </span>
+                                </h5>
+                                <h5>
+                                  No. of days:
+                                  <span>{detailedLeaveReq?.noOfDays}</span>
                                 </h5>
                               </div>
                               <div className="modal-footer">

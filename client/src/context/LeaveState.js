@@ -9,6 +9,7 @@ function LeaveState(props) {
   const [requestedLeavesArr, setRequestedLeavesArr] = useState([]);
   const [requestesForHodArr, setRequestesForHodArr] = useState([]);
   const [requestsForAdminArr, setRequestsForAdminArr] = useState([]);
+  const [allLeavesArr, setallLeavesArr] = useState([]);
 
   const getusers = async () => {
     try {
@@ -119,7 +120,7 @@ function LeaveState(props) {
       const res = await axios.get(
         `http://localhost:4000/api/leave/principal/allLeaves`
       );
-      return res.data;
+      setallLeavesArr(res.data);
     } catch (err) {
       console.log(err);
     }
@@ -144,6 +145,7 @@ function LeaveState(props) {
         login,
         deleteLeave,
         getAllLeaves,
+        allLeavesArr,
       }}
     >
       {props.children}

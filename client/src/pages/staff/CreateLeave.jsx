@@ -32,17 +32,12 @@ function CreateLeave() {
     let start = new Date(leaveData.dateStart);
     let finish = new Date(leaveData.dateEnd);
     let dayMilliseconds = 1000 * 60 * 60 * 24;
-    let weekendDays = 0;
     let totalDays = 0;
     while (start <= finish) {
-      let day = start.getDay();
-      if (day === 0) {
-        weekendDays++;
-      }
       totalDays++;
       start = new Date(+start + dayMilliseconds);
     }
-    let leaveCount = totalDays - weekendDays;
+    let leaveCount = totalDays ;
     setTotalLeaveDays(leaveCount);
 
     setLeaveData({ ...leaveData, noOfDays: leaveCount });
