@@ -29,7 +29,7 @@ function LeaveRequest() {
   } = userContext;
 
   useEffect(() => {
-    if (!userDets) {
+    if (userDets?.role === "Admin") {
       navigate("/login");
     }
     // eslint-disable-next-line
@@ -39,9 +39,11 @@ function LeaveRequest() {
     if (userDets?.role === "Staff" || userDets?.role === "Hod") {
       myRequestedLeaves(userDets?._id);
     }
-    userDets?.role === "Staff"
-      ? recievedRequests(userDets?.staffName)
-      : requestesForHod(userDets?.department);
+    if (userDets?.role === "Staff") {
+      recievedRequests(userDets?.staffName);
+    } else if (userDets?.role === "Hod") {
+      requestesForHod(userDets?.department);
+    }
 
     // eslint-disable-next-line
   }, [userChange]);

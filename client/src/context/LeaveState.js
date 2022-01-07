@@ -16,6 +16,7 @@ function LeaveState(props) {
       const users = await axios.get(
         "http://localhost:4000/api/staff/fetchusers"
       );
+      // console.log(users);
       setuserArr(users.data);
     } catch (error) {
       console.log(error);
