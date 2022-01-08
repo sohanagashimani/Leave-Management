@@ -1,5 +1,0 @@
-view desc for staffs
-principal: staff on leave
-remove delete leave functionality
-styling
-testing

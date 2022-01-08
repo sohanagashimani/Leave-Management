@@ -88,12 +88,15 @@ router.post("/login", async (req, res) => {
       return res.status(200).json({ msg: "wrong password", success: false });
     }
     if (user.type !== "Regular") {
-      const joiningYear = user.joiningDate.getFullYear();
-      const currentYear = new Date().getFullYear();
-      const typeChange = currentYear - joiningYear;
-
-      if (typeChange !== 0) {
+      const currentDate = new Date();
+      const tempDate = new Date(user.tempDate);
+      const totalSeconds = (currentDate - tempDate) / 1000;
+      const days = Math.floor(totalSeconds / 3600 / 24);
+      // console.log(tempDate, currentDate, days);
+      if (days >= 365) {
         const currentDate = new Date();
+        const joiningMonth = new Date(user.joiningDate).getMonth();
+        console.log(joiningMonth);
         const regularBalance = 11 - joiningMonth;
         await Staff.findByIdAndUpdate(user._id, {
           type: "Regular",
@@ -102,21 +105,47 @@ router.post("/login", async (req, res) => {
         });
         return res.status(200).json({ user, success: true });
       } else {
-        const currentMonth = new Date().getMonth();
-        const tempMonth = user.tempDate.getMonth();
-        const monthChange = currentMonth - tempMonth;
-        if (monthChange !== 0) {
-          const currentDate = new Date();
-          const updatedProbationLeaves =
-            user.probationStaffLeaves + monthChange;
-          await Staff.findByIdAndUpdate(user._id, {
-            probationStaffLeaves: updatedProbationLeaves,
-            tempDate: currentDate,
-          });
-          user = await Staff.findOne({
-            email: req.body.email,
-          });
-          return res.status(200).json({ user, success: true });
+        if (new Date().getDate() >= new Date(user.joiningDate).getDate()) {
+          const currentMonth = new Date().getMonth();
+          // console.log(currentMonth);
+          const tempMonth = user.tempDate.getMonth();
+          // console.log(tempMonth);
+          if (tempMonth <= currentMonth) {
+            const monthChange = currentMonth - tempMonth;
+            if (monthChange !== 0) {
+              const currentDate = new Date();
+              const updatedProbationLeaves =
+                user.probationStaffLeaves + monthChange;
+              await Staff.findByIdAndUpdate(user._id, {
+                probationStaffLeaves: updatedProbationLeaves,
+                tempDate: currentDate,
+              });
+              user = await Staff.findOne({
+                email: req.body.email,
+              });
+              return res.status(200).json({ user, success: true });
+            } else {
+              return res.status(200).json({ user, success: true });
+            }
+          } else {
+            const joiningMonth = new Date(user.tempDate).getMonth();
+            const monthChange = 11 - joiningMonth + currentMonth + 1;
+            if (monthChange !== 0) {
+              const currentDate = new Date();
+              const updatedProbationLeaves =
+                user.probationStaffLeaves + monthChange;
+              await Staff.findByIdAndUpdate(user._id, {
+                probationStaffLeaves: updatedProbationLeaves,
+                tempDate: currentDate,
+              });
+              user = await Staff.findOne({
+                email: req.body.email,
+              });
+              return res.status(200).json({ user, success: true });
+            } else {
+              return res.status(200).json({ user, success: true });
+            }
+          }
         } else {
           return res.status(200).json({ user, success: true });
         }
@@ -127,9 +156,11 @@ router.post("/login", async (req, res) => {
       const day = dateObj.getUTCDate();
       const year = dateObj.getUTCFullYear();
       const newdate = year + "/" + month + "/" + day;
+      // console.log(newdate);
       const yearBegins = new Date(dateObj.getFullYear(), 0, 1);
       const janYear = yearBegins.getFullYear();
-      const firstOfJan = janYear + "/" + 12 + "/" + 24;
+      const firstOfJan = janYear + "/" + 1 + "/" + 1;
+      // console.log(firstOfJan);
       if (newdate === firstOfJan) {
         await Staff.updateMany(
           { type: "Regular" },
