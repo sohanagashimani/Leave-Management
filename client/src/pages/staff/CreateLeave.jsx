@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import React from "react";
 import { MultiSelect } from "react-multi-select-component";
+import WarningIcon from "@mui/icons-material/Warning";
 
 function CreateLeave() {
   const localUserDetails = JSON.parse(localStorage.getItem("storedUser"));
@@ -37,7 +38,7 @@ function CreateLeave() {
       totalDays++;
       start = new Date(+start + dayMilliseconds);
     }
-    let leaveCount = totalDays ;
+    let leaveCount = totalDays;
     setTotalLeaveDays(leaveCount);
 
     setLeaveData({ ...leaveData, noOfDays: leaveCount });
@@ -285,7 +286,19 @@ function CreateLeave() {
             </Form>
           </div>
         ) : (
-          "No leaves remaining"
+          <>
+            <div
+              className=" d-flex align-items-center justify-content-center"
+              style={{ height: "90vh" }}
+            >
+              <h2>
+                No leaves remaining{" "}
+                <span>
+                  <WarningIcon color="disabled" fontSize="large" />
+                </span>{" "}
+              </h2>
+            </div>
+          </>
         )
       ) : userDets.probationStaffLeaves !== 0 ? (
         <div className="container leaveForm">
@@ -388,7 +401,19 @@ function CreateLeave() {
           </Form>
         </div>
       ) : (
-        <h1>No Leaves Remaining</h1>
+        <>
+          <div
+            className=" d-flex align-items-center justify-content-center"
+            style={{ height: "90vh" }}
+          >
+            <h2>
+              No leaves remaining{" "}
+              <span>
+                <WarningIcon color="disabled" fontSize="large" />
+              </span>{" "}
+            </h2>
+          </div>
+        </>
       )}
     </>
   );

@@ -30,7 +30,7 @@ function Hodrequests() {
   return (
     <>
       <div className="container my-5">
-        <h1>Incoming leave applications</h1>
+        <h1 className="text-center mb-3">Incoming leave applications</h1>
         <Table striped bordered hover>
           <thead>
             <tr className="theads">
@@ -42,7 +42,7 @@ function Hodrequests() {
             </tr>
           </thead>
           <tbody>
-            {requestsForAdminArr?.map((leaveReq) => {
+            {[...requestsForAdminArr].reverse()?.map((leaveReq) => {
               return (
                 <tr key={leaveReq._id}>
                   <td className="center">{leaveReq.name}</td>

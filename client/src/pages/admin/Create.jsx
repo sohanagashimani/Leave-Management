@@ -280,7 +280,12 @@ function Create() {
                   <option value="ECE">ECE</option>
                   <option value="EEE">EEE</option>
                   <option value="CIV">CIV</option>
-                  <option value="ME">ME</option>
+                  <option value="PHY">PHY</option>
+                  <option value="CHEM">CHEM</option>
+                  <option value="MATH">MATH</option>
+                  <option value="OFFICE">OFFICE</option>
+                  <option value="MBA">MBA</option>
+                  <option value="MCA">MCA</option>
                 </Form.Select>{" "}
                 <p className="text-danger">{formErrors.department}</p>
               </FloatingLabel>

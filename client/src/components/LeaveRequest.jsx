@@ -27,9 +27,8 @@ function LeaveRequest() {
     requestesForHod,
     requestesForHodArr,
   } = userContext;
-
   useEffect(() => {
-    if (userDets?.role === "Admin") {
+    if (userDets?.role === "Admin" || userDets?.role === "Principal") {
       navigate("/login");
     }
     // eslint-disable-next-line
@@ -47,7 +46,6 @@ function LeaveRequest() {
 
     // eslint-disable-next-line
   }, [userChange]);
-
   let count = 0;
 
   const populateModal = (modalDeets) => {
@@ -89,7 +87,7 @@ function LeaveRequest() {
               </tr>
             </thead>
             <tbody>
-              {requestedLeavesArr.map((leaveReq) => {
+              {[...requestedLeavesArr].reverse().map((leaveReq) => {
                 return (
                   <tr className="theads" key={leaveReq._id}>
                     <td>{(count += 1)}</td>
@@ -326,7 +324,7 @@ function LeaveRequest() {
             </tr>
           </thead>
           <tbody>
-            {recievedLeaveArr.map((leaveReq) => {
+            {[...recievedLeaveArr].reverse().map((leaveReq) => {
               // console.log(modalDetails?.byStaff);
               return (
                 <tr key={leaveReq._id}>
@@ -478,7 +476,7 @@ function LeaveRequest() {
             })}
           </tbody>
           <tbody>
-            {requestesForHodArr.map((leaveReq) => {
+            {[...requestesForHodArr].reverse().map((leaveReq) => {
               return (
                 <tr key={leaveReq._id}>
                   {leaveReq.userId !== userDets._id && (

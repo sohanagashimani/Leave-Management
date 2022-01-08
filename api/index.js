@@ -25,12 +25,6 @@ mongoose
 app.use(express.json());
 app.use(morgan("common"));
 
-// app.use(express.static(path.join(__dirname, "../client/public")));
-
-// app.get("/", function (req, res) {
-//   res.sendFile(path.join(__dirname, "../client/public", "index.html"));
-// });
-
 app.use("/api/staff", staffRoute);
 app.use("/api/auth", authRoute);
 app.use("/api/leave", leaveRoute);
