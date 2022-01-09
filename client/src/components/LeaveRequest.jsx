@@ -317,7 +317,7 @@ function LeaveRequest() {
               <th>Accept/Decline</th>
             </tr>
           </thead>
-          {userDets.role === "Staff" ? (
+          {userDets?.role === "Staff" ? (
             <>
               <tbody>
                 {[...recievedLeaveArr].reverse().map((leaveReq) => {
