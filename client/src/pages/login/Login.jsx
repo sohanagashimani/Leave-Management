@@ -3,7 +3,6 @@ import LeaveContext from "../../context/LeaveContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 function Login() {
   const userContext = useContext(LeaveContext);
   const navigate = useNavigate();
@@ -63,8 +62,11 @@ function Login() {
   };
 
   return (
-    <div className="loginContainer">
-      <div className="container container2 ">
+    <div className="vertical-center">
+      <div
+        className=" container border border-dark rounded"
+        style={{ padding: "1rem", width: "30%" }}
+      >
         <form className="requires-validation" onSubmit={handleOnSubmit}>
           <div className="mb-3">
             <label htmlFor="exampleInputEmail1" className="form-label">

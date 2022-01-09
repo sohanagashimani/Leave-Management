@@ -40,7 +40,7 @@ router.put("/:id", async (req, res) => {
 // get users
 router.get("/fetchusers", async (req, res) => {
   try {
-    const users = await Staff.find({}, { password: 0, isAdmin: 0 });
+    const users = await Staff.find({}, { password: 0 });
 
     res.status(200).json(users);
   } catch (err) {

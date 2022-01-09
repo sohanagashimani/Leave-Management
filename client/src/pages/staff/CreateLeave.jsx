@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import React from "react";
 import { MultiSelect } from "react-multi-select-component";
-import WarningIcon from "@mui/icons-material/Warning";
 
 function CreateLeave() {
   const localUserDetails = JSON.parse(localStorage.getItem("storedUser"));
@@ -177,244 +176,102 @@ function CreateLeave() {
 
   return (
     <>
-      {userDets.type === "Regular" ? (
-        userDets.regularStaffLeaves + userDets.earnedLeaves !== 0 ? (
-          <div className="container leaveForm">
-            {/* multiple select related code:  */}
+      <div className="container leaveForm">
+        {/* multiple select related code:  */}
 
-            <h1>Apply for a new leave</h1>
-            <hr />
-            <Form onSubmit={sendLeaveDetails}>
-              <Form.Group
-                className="mb-3"
-                controlId="exampleForm.ControlInput1"
-              >
-                <Form.Label className="fs-3">Subject</Form.Label>
-                <Form.Control
-                  name="subject"
-                  onChange={changeInputHandler}
-                  type="text"
-                />
-                <p className="text-danger">{formErrors.subject}</p>
-              </Form.Group>
-              <Form.Group
-                className="mb-3"
-                controlId="exampleForm.ControlTextarea1"
-              >
-                <Form.Label className="fs-3">
-                  Description{" "}
-                  <span className="fs-6">
-                    (Enter all the details of the leave including the reason and
-                    timings for substitute teachers)
-                  </span>
-                </Form.Label>
-                <Form.Control
-                  onChange={changeInputHandler}
-                  as="textarea"
-                  rows={3}
-                  name="body"
-                />
-                <p className="text-danger">{formErrors.body}</p>
-              </Form.Group>
-              <Form.Label className="fs-3">Type of leave</Form.Label>
-              <FloatingLabel
-                controlId="floatingSelect"
-                label="Select type of leave"
-              >
-                <Form.Select
-                  aria-label="Floating label select example"
-                  onChange={changeInputHandler}
-                  name="type"
-                >
-                  <option></option>
-                  required
-                  <option value={"Duty"}>Duty</option>
-                  <option value={"Casual"}>Casual</option>
-                  {userDets.type === "Regular" ? (
-                    <option value={"Earned"}>Earned</option>
-                  ) : (
-                    ""
-                  )}
-                </Form.Select>
-                <p className="text-danger">{formErrors.type}</p>
-              </FloatingLabel>
-              <div>
-                <label className="me-2 fs-4">Start date:</label>
-                <input
-                  name="dateStart"
-                  onChange={changeInputHandler}
-                  className="mb-1"
-                  type="date"
-                />
-                <span className="text-danger">{formErrors.dateStart}</span>
-
-                <label className=" ms-2 fs-4">End date:</label>
-                <input
-                  name="dateEnd"
-                  onChange={changeInputHandler}
-                  className="mb-1"
-                  type="date"
-                  min={leaveData.dateStart}
-                  disabled={isEndDateDisabled}
-                />
-                <span className="text-danger">{formErrors.dateEnd}</span>
-
-                <label className=" ms-2 fs-4">
-                  Number of days: {totalLeaveDays}
-                </label>
-                <span
-                  className="ms-2 fs-5"
-                  id="noOfDays"
-                  name="noOfDays"
-                ></span>
-              </div>
-              <label className=" my-2 fs-4">Select substitute staff: </label>
-              <MultiSelect
-                options={options}
-                value={selected}
-                hasSelectAll={false}
-                onChange={setSelected}
-              />
-              <Button
-                variant="primary"
-                disabled={isSubmitDisabled}
-                className="mt-4"
-                type="submit"
-              >
-                Submit
-              </Button>
-            </Form>
-          </div>
-        ) : (
-          <>
-            <div
-              className=" d-flex align-items-center justify-content-center"
-              style={{ height: "90vh" }}
-            >
-              <h2>
-                No leaves remaining{" "}
-                <span>
-                  <WarningIcon color="disabled" fontSize="large" />
-                </span>{" "}
-              </h2>
-            </div>
-          </>
-        )
-      ) : userDets.probationStaffLeaves !== 0 ? (
-        <div className="container leaveForm">
-          {/* multiple select related code:  */}
-
-          <h1>Apply for a new leave</h1>
-          <hr />
-          <Form onSubmit={sendLeaveDetails}>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label className="fs-3">Subject</Form.Label>
-              <Form.Control
-                name="subject"
-                onChange={changeInputHandler}
-                type="text"
-              />
-              <p className="text-danger">{formErrors.subject}</p>
-            </Form.Group>
-            <Form.Group
-              className="mb-3"
-              controlId="exampleForm.ControlTextarea1"
-            >
-              <Form.Label className="fs-3">
-                Description{" "}
-                <span className="fs-6">
-                  (Enter all the details of the leave including the reason and
-                  timings for substitute teachers)
-                </span>
-              </Form.Label>
-              <Form.Control
-                onChange={changeInputHandler}
-                as="textarea"
-                rows={3}
-                name="body"
-              />
-              <p className="text-danger">{formErrors.body}</p>
-            </Form.Group>
-            <Form.Label className="fs-3">Type of leave</Form.Label>
-            <FloatingLabel
-              controlId="floatingSelect"
-              label="Select type of leave"
-            >
-              <Form.Select
-                aria-label="Floating label select example"
-                onChange={changeInputHandler}
-                name="type"
-              >
-                <option></option>
-                required
-                <option value={"Duty"}>Duty</option>
-                <option value={"Casual"}>Casual</option>
-                {userDets.type === "Regular" ? (
-                  <option value={"Earned"}>Earned</option>
-                ) : (
-                  ""
-                )}
-              </Form.Select>
-              <p className="text-danger">{formErrors.type}</p>
-            </FloatingLabel>
-            <div>
-              <label className="me-2 fs-4">Start date:</label>
-              <input
-                name="dateStart"
-                onChange={changeInputHandler}
-                className="mb-1"
-                type="date"
-              />
-              <span className="text-danger">{formErrors.dateStart}</span>
-
-              <label className=" ms-2 fs-4">End date:</label>
-              <input
-                name="dateEnd"
-                onChange={changeInputHandler}
-                className="mb-1"
-                type="date"
-                min={leaveData.dateStart}
-                disabled={isEndDateDisabled}
-              />
-              <span className="text-danger">{formErrors.dateEnd}</span>
-
-              <label className=" ms-2 fs-4">
-                Number of days: {totalLeaveDays}
-              </label>
-              <span className="ms-2 fs-5" id="noOfDays" name="noOfDays"></span>
-            </div>
-            <label className=" my-2 fs-4">Select substitute staff: </label>
-            <MultiSelect
-              options={options}
-              value={selected}
-              hasSelectAll={false}
-              onChange={setSelected}
+        <h1>Apply for a new leave</h1>
+        <hr />
+        <Form onSubmit={sendLeaveDetails}>
+          <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+            <Form.Label className="fs-3">Subject</Form.Label>
+            <Form.Control
+              name="subject"
+              onChange={changeInputHandler}
+              type="text"
             />
-            <Button
-              variant="primary"
-              disabled={isSubmitDisabled}
-              className="mt-4"
-              type="submit"
-            >
-              Submit
-            </Button>
-          </Form>
-        </div>
-      ) : (
-        <>
-          <div
-            className=" d-flex align-items-center justify-content-center"
-            style={{ height: "90vh" }}
+            <p className="text-danger">{formErrors.subject}</p>
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+            <Form.Label className="fs-3">
+              Description{" "}
+              <span className="fs-6">
+                (Enter all the details of the leave including the reason and
+                timings for substitute teachers)
+              </span>
+            </Form.Label>
+            <Form.Control
+              onChange={changeInputHandler}
+              as="textarea"
+              rows={3}
+              name="body"
+            />
+            <p className="text-danger">{formErrors.body}</p>
+          </Form.Group>
+          <Form.Label className="fs-3">Type of leave</Form.Label>
+          <FloatingLabel
+            controlId="floatingSelect"
+            label="Select type of leave"
           >
-            <h2>
-              No leaves remaining{" "}
-              <span>
-                <WarningIcon color="disabled" fontSize="large" />
-              </span>{" "}
-            </h2>
+            <Form.Select
+              aria-label="Floating label select example"
+              onChange={changeInputHandler}
+              name="type"
+            >
+              <option></option>
+              required
+              <option value={"Duty"}>Duty</option>
+              <option value={"Casual"}>Casual</option>
+              {userDets.type === "Regular" ? (
+                <option value={"Earned"}>Earned</option>
+              ) : (
+                ""
+              )}
+            </Form.Select>
+            <p className="text-danger">{formErrors.type}</p>
+          </FloatingLabel>
+          <div>
+            <label className="me-2 fs-4">Start date:</label>
+            <input
+              name="dateStart"
+              onChange={changeInputHandler}
+              className="mb-1"
+              type="date"
+            />
+            <span className="text-danger">{formErrors.dateStart}</span>
+
+            <label className=" ms-2 fs-4">End date:</label>
+            <input
+              name="dateEnd"
+              onChange={changeInputHandler}
+              className="mb-1"
+              type="date"
+              min={leaveData.dateStart}
+              disabled={isEndDateDisabled}
+            />
+            <span className="text-danger">{formErrors.dateEnd}</span>
+
+            <label className=" ms-2 fs-4">
+              Number of days: {totalLeaveDays}
+            </label>
+            <span className="ms-2 fs-5" id="noOfDays" name="noOfDays"></span>
           </div>
-        </>
-      )}
+          <label className=" my-2 fs-4">Select substitute staff: </label>
+          <MultiSelect
+            options={options}
+            value={selected}
+            hasSelectAll={false}
+            onChange={setSelected}
+          />
+          <Button
+            variant="primary"
+            disabled={isSubmitDisabled}
+            className="mt-4"
+            type="submit"
+          >
+            Submit
+          </Button>
+        </Form>
+      </div>
     </>
   );
 }

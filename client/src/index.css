@@ -3,57 +3,37 @@
   margin-left: 0.3rem;
 }
 
-.theads {
-  text-align: center;
-}
-
-.center {
-  text-align: center;
-}
-
-.loginContainer {
+.vertical-center {
+  min-height: 100%; /* Fallback for browsers do NOT support vh unit */
+  min-height: 100vh; /* These two lines are counted as one :-)       */
   display: flex;
-  justify-content: center;
-  margin-top: 15rem;
+  align-items: center;
 }
-
-.container2 {
-  padding: 1rem;
-  width: 30%;
-  border: 0.1rem black solid;
-  border-radius: 0.2rem;
+.leaveReqDiv {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
 }
 
 .myRequests {
-  width: 48%;
-  margin: 0.5rem;
-  margin-top: 2rem;
-}
-
-.myRequests h1 {
   text-align: center;
-  padding: 0.5rem;
+  border: 0.1rem black solid;
+  height: fit-content;
+  width: 49%;
+  padding: 1rem;
+  margin: 2rem 1rem 1rem 1rem;
 }
 
 .recievedRequests {
-  width: 48%;
-  margin: 0.5rem;
-  margin-top: 2rem;
-  border: 0.1rem black solid;
-  border-radius: 0.2rem;
-  padding: 1rem;
-}
-
-.recievedRequests h1 {
   text-align: center;
-}
-
-.tableRequests {
-  border: 0.1rem black solid;
-  border-radius: 0.2rem;
-
-  margin-bottom: 1rem;
+  width: 49%;
   padding: 1rem;
+  margin: 2rem 1rem 1rem 1rem;
+  border: 0.1rem black solid;
+  height: fit-content;
+}
+.modal-body {
+  text-align: left;
 }
 
 .leaveForm {
