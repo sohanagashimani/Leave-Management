@@ -3,6 +3,8 @@ import { useContext, useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
 import LeaveContext from "../../context/LeaveContext";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
 function Hodrequests() {
   const navigate = useNavigate();
   const [modalDetails, setModalDetails] = useState({});
@@ -20,7 +22,7 @@ function Hodrequests() {
     // eslint-disable-next-line
   }, []);
   useEffect(() => {
-    if (userDets) requestsForAdmin();
+    if (userDets.role === "Admin") requestsForAdmin();
     // eslint-disable-next-line
   }, [userChange]);
   const populateModal = (modalDeets) => {
@@ -136,14 +138,19 @@ function Hodrequests() {
                               type="button"
                               className="btn btn-secondary"
                               data-bs-dismiss="modal"
-                              onClick={() => {
-                                staffStatus(
-                                  modalDetails._id,
+                              onClick={async () => {
+                                const res = await staffStatus(
+                                  modalDetails?._id,
                                   1,
                                   "Admin",
-                                  modalDetails.noOfDays
+                                  modalDetails?.noOfDays
                                 );
-                                setuserChange(!userChange);
+                                if (res) {
+                                  setuserChange(!userChange);
+                                  toast.info("Accepted");
+                                } else {
+                                  toast.danger("Internal server error");
+                                }
                               }}
                             >
                               Accept
@@ -152,14 +159,19 @@ function Hodrequests() {
                               type="button"
                               className="btn btn-primary"
                               data-bs-dismiss="modal"
-                              onClick={() => {
-                                staffStatus(
-                                  modalDetails._id,
+                              onClick={async () => {
+                                const res = await staffStatus(
+                                  modalDetails?._id,
                                   2,
                                   "Admin",
-                                  modalDetails.noOfDays
+                                  modalDetails?.noOfDays
                                 );
-                                setuserChange(!userChange);
+                                if (res) {
+                                  setuserChange(!userChange);
+                                  toast.info("Declined");
+                                } else {
+                                  toast.danger("Internal server error");
+                                }
                               }}
                             >
                               Decline

@@ -9,9 +9,11 @@ import { toast } from "react-toastify";
 
 function Create() {
   const [userChange, setuserChange] = useState(false);
+  const [userChange2, setuserChange2] = useState(false);
   const [isDisabled, setisDisabled] = useState(true);
   const [user, setUser] = useState({});
   const [formErrors, setFormErrors] = useState({});
+  const [filteredArr, setFilteredArr] = useState([]);
   const userContext = useContext(LeaveContext);
   const { getusers, userArr, deleteUser } = userContext;
 
@@ -23,7 +25,7 @@ function Create() {
       navigate("/login");
     }
     // eslint-disable-next-line
-  }, []);
+  }, [userChange]);
   const validate = (values) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phregex = /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/im;
@@ -66,10 +68,20 @@ function Create() {
   };
 
   useEffect(() => {
-    if (userDets?.role === "Admin") getusers();
+    async function callUserApi() {
+      if (userDets?.role === "Admin") {
+        const response = await getusers();
+        // console.log(response);
+        if (response) {
+          setFilteredArr(response);
+        } else {
+          toast.error("Internal Server Error");
+        }
+      }
+    }
+    callUserApi();
     // eslint-disable-next-line
-  }, [userChange]);
-
+  }, [userChange2]);
   const handleClick = async (e) => {
     e.preventDefault();
     setFormErrors(validate(user));
@@ -104,14 +116,13 @@ function Create() {
   };
 
   const deleteUserFrontend = async (user) => {
-    console.log(user);
     const deleteResponse = await deleteUser(user._id);
     if (deleteResponse) {
       toast.success(deleteResponse);
     } else {
       toast.error("internal server error");
     }
-    setuserChange(!userChange);
+    setuserChange2(!userChange2);
   };
 
   const handleChange = (e) => {
@@ -121,6 +132,19 @@ function Create() {
       setisDisabled(true);
     }
     setUser({ ...user, [e.target.name]: e.target.value });
+  };
+
+  const filterDepartment = (e) => {
+    // console.log(e.target.value);
+    if (e.target.value === "ALL") {
+      setFilteredArr(userArr);
+    } else {
+      let newArr = userArr?.filter(
+        (user) => user.department === e.target.value
+      );
+      setFilteredArr(newArr);
+      setuserChange(!userChange);
+    }
   };
 
   return (
@@ -298,6 +322,47 @@ function Create() {
           </Form.Group>
           <hr />
         </Form>
+        <div className="dropdown">
+          <label>Filter staff by department</label>
+          <select
+            onChange={filterDepartment}
+            label="Select Department to view staff"
+          >
+            <option className="dropdown-item" value="ALL">
+              ALL
+            </option>
+            <option className="dropdown-item" value="CSE">
+              CSE
+            </option>
+            <option className="dropdown-item" value="ECE">
+              ECE
+            </option>
+            <option className="dropdown-item" value="EEE">
+              EEE
+            </option>
+            <option className="dropdown-item" value="CIV">
+              CIV
+            </option>
+            <option className="dropdown-item" value="PHY">
+              PHY
+            </option>
+            <option className="dropdown-item" value="CHEM">
+              CHEM
+            </option>
+            <option className="dropdown-item" value="MATH">
+              MATH
+            </option>
+            <option className="dropdown-item" value="OFFICE">
+              OFFICE
+            </option>
+            <option className="dropdown-item" value="MBA">
+              MBA
+            </option>
+            <option className="dropdown-item" value="MCA">
+              MCA
+            </option>
+          </select>
+        </div>
         <Table striped bordered hover>
           <thead>
             <tr>
@@ -312,7 +377,7 @@ function Create() {
             </tr>
           </thead>
           <tbody>
-            {userArr.map((user) => {
+            {filteredArr?.map((user) => {
               return (
                 <tr key={user.staffId}>
                   {user.role !== "Admin" && (

@@ -9,6 +9,7 @@ import UserProfile from "./pages/profile/UserProfile";
 import NavBar from "./components/NavBar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ViewStaff from "./pages/View Staff/ViewStaff";
 
 function App() {
   // hello
@@ -31,6 +32,7 @@ function App() {
           <Route path="/leaveRequests" element={<Hodrequests />} />
           <Route path="/createLeave" element={<CreateLeave />} />
           <Route path="/profile" element={<UserProfile />} />
+          <Route path="/viewStaff" element={<ViewStaff />} />
         </Routes>
       </Router>
     </>

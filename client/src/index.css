@@ -11,6 +11,7 @@
 }
 .leaveReqDiv {
   display: flex;
+  flex-wrap: wrap;
   flex-direction: row;
   justify-content: space-around;
 }
@@ -19,14 +20,14 @@
   text-align: center;
   border: 0.1rem black solid;
   height: fit-content;
-  width: 49%;
+  width:57rem;
   padding: 1rem;
   margin: 2rem 1rem 1rem 1rem;
 }
 
 .recievedRequests {
   text-align: center;
-  width: 49%;
+  width:57rem;
   padding: 1rem;
   margin: 2rem 1rem 1rem 1rem;
   border: 0.1rem black solid;

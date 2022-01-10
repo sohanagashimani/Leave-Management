@@ -18,6 +18,7 @@ function LeaveState(props) {
       );
       // console.log(users);
       setuserArr(users.data);
+      return users.data;
     } catch (error) {
       console.log(error);
     }
@@ -147,6 +148,7 @@ function LeaveState(props) {
         deleteLeave,
         getAllLeaves,
         allLeavesArr,
+        setuserArr,
       }}
     >
       {props.children}

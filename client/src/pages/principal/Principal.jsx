@@ -1,36 +1,42 @@
 import React from "react";
 import "../../index.css";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
 import LeaveContext from "../../context/LeaveContext";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function Principal() {
   const navigate = useNavigate();
   const userContext = useContext(LeaveContext);
+  const [userChange, setuserChange] = useState(false);
+  const [filteredArr, setFilteredArr] = useState([]);
   const { userArr, getusers, getAllLeaves, allLeavesArr } = userContext;
-  useEffect(() => {
-    if (userDets?.role !== "Principal" || localUserDetails === null) {
-      navigate("/login");
-    }
-    // eslint-disable-next-line
-  }, []);
-
-  useEffect(() => {
-    getusers();
-    getAllLeaves();
-
-    // eslint-disable-next-line
-  }, []);
-  const localUserDetails = JSON.parse(localStorage.getItem("storedUser"));
-  const userDets = localUserDetails?.user;
-
   useEffect(() => {
     if (userDets?.role !== "Principal") {
       navigate("/login");
     }
     // eslint-disable-next-line
   }, []);
+
+  useEffect(() => {
+    async function callUserApi() {
+      if (userDets?.role === "Principal") {
+        const response = await getusers();
+        // console.log(response);
+        if (response) {
+          setFilteredArr(response);
+        } else {
+          toast.error("Internal Server Error");
+        }
+      }
+    }
+    callUserApi();
+    getAllLeaves();
+    // eslint-disable-next-line
+  }, []);
+  const localUserDetails = JSON.parse(localStorage.getItem("storedUser"));
+  const userDets = localUserDetails?.user;
 
   const todaysDate = new Date();
 
@@ -46,52 +52,73 @@ function Principal() {
       updatedArr.push(leave);
     }
   });
+  const filterDepartment = (e) => {
+    // console.log(e.target.value);
+    if (e.target.value === "ALL") {
+      setFilteredArr(userArr);
+    } else {
+      let newArr = userArr?.filter(
+        (user) => user.department === e.target.value
+      );
+      setFilteredArr(newArr);
+      setuserChange(!userChange);
+    }
+  };
 
-  console.log(updatedArr);
+  // console.log(updatedArr);
 
   return (
     <>
       <div className="container center">
         <div className="card my-4" style={{ width: "20rem", margin: "auto" }}>
           <div className="card-header">{new Date().toDateString()}</div>
-          <ul className="list-group list-group-flush">
-            <a
-              className="list-group-item "
-              data-bs-toggle="collapse"
-              href="#collapseExample"
-              role="button"
-              aria-expanded="false"
-              aria-controls="collapseExample"
-            >
-              Number of staff on leave today: {updatedArr.length}
-            </a>
-            <div className="collapse" id="collapseExample">
-              <div
-                className="card card-body"
-                style={{ padding: "0.1rem 0 0.1rem 0" }}
-              >
-                {updatedArr.map((item) => {
-                  return (
-                    <ul
-                      className="list-group list-group-flush "
-                      key={item.name}
-                    >
-                      <li
-                        className="list-group-item"
-                        style={{ textAlign: "left" }}
-                      >
-                        <span>{item?.name}</span>
-                      </li>
-                    </ul>
-                  );
-                })}
-              </div>
-            </div>
-          </ul>
+          <div className="card card-body">todo</div>
         </div>
         <h1 className="my-4 text-center">
           Jain College of Engineering Staff Details
         </h1>
+        <div className="dropdown">
+          <label>Filter staff by department</label>
+          <select
+            className="btn btn-secondary dropdown-toggle"
+            onChange={filterDepartment}
+            label="Select Department to view staff"
+          >
+            <option className="dropdown-item" value="ALL">
+              ALL
+            </option>
+            <option className="dropdown-item" value="CSE">
+              CSE
+            </option>
+            <option className="dropdown-item" value="ECE">
+              ECE
+            </option>
+            <option className="dropdown-item" value="EEE">
+              EEE
+            </option>
+            <option className="dropdown-item" value="CIV">
+              CIV
+            </option>
+            <option className="dropdown-item" value="PHY">
+              PHY
+            </option>
+            <option className="dropdown-item" value="CHEM">
+              CHEM
+            </option>
+            <option className="dropdown-item" value="MATH">
+              MATH
+            </option>
+            <option className="dropdown-item" value="OFFICE">
+              OFFICE
+            </option>
+            <option className="dropdown-item" value="MBA">
+              MBA
+            </option>
+            <option className="dropdown-item" value="MCA">
+              MCA
+            </option>
+          </select>
+        </div>
         <Table striped bordered hover>
           <thead>
             <tr>
@@ -106,7 +133,7 @@ function Principal() {
             </tr>
           </thead>
           <tbody>
-            {userArr.map((user) => {
+            {filteredArr.map((user) => {
               return (
                 <tr key={user.staffId}>
                   {user.role !== "Principal" && user.role !== "Admin" && (

@@ -109,6 +109,11 @@ function NavBar() {
                     : "Create a new leave"}
                 </Nav.Link>
               )}
+              {userDets.role === "Hod" && (
+                <Nav.Link as={NavLink} to={"/viewStaff"}>
+                  View Staff
+                </Nav.Link>
+              )}
             </Nav>
           </Navbar.Collapse>
 
