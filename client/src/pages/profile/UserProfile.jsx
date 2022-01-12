@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Card } from "react-bootstrap";
+import logo from "./user.png";
 
 import { useNavigate } from "react-router-dom";
 function UserProfile() {
@@ -21,15 +22,17 @@ function UserProfile() {
         <Card style={{ width: "25rem" }}>
           <Card.Img
             variant="top"
-            src="https://nd.net/wp-content/uploads/2016/04/profile-dummy.png"
+            src={logo}
             style={{
               width: "25rem",
               height: "25rem",
+              padding: "0.6rem",
             }}
           />
           <Card.Body>
-            <Card.Title>Name: {userDets?.staffName}</Card.Title>
             <Card.Title>Staff ID: {userDets?.staffId}</Card.Title>
+            <Card.Title>Designation: {userDets?.designation}</Card.Title>
+            <Card.Title>Name: {userDets?.staffName}</Card.Title>
             <Card.Title>Phone Number: {userDets?.phnumber}</Card.Title>
             <Card.Title>Email: {userDets?.email}</Card.Title>
             <Card.Title>Role: {userDets?.role}</Card.Title>

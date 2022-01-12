@@ -47,6 +47,7 @@ function ViewStaff() {
           <thead>
             <tr>
               <th>Staff ID</th>
+              <th>Designation</th>
               <th>Full Name</th>
               <th>Email </th>
               <th>Phone Number</th>
@@ -63,6 +64,7 @@ function ViewStaff() {
                   {user.role !== "Principal" && user.role !== "Admin" && (
                     <>
                       <td>{user.staffId}</td>
+                      <td>{user.designation}</td>
                       <td>{user.staffName}</td>
                       <td>{user.email}</td>
                       <td>{user.phnumber}</td>

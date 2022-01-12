@@ -4,6 +4,7 @@ const staffSchema = new mongoose.Schema(
     staffId: {
       type: String,
       require: true,
+      min: 3,
       unique: true,
     },
     staffName: {
@@ -15,19 +16,24 @@ const staffSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
+      min: 3,
       max: 20,
       unique: true,
     },
     password: {
+      min: 3,
       type: String,
       required: true,
-      min: 6,
+    },
+    designation: {
+      min: 2,
+      type: String,
+      required: true,
     },
     phnumber: {
       type: String,
       required: true,
       min: 10,
-      unique: true,
     },
     role: {
       type: String,

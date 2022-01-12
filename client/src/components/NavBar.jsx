@@ -67,61 +67,60 @@ function NavBar() {
   return (
     <>
       {userDets ? (
-        <Navbar bg="light" expand="lg">
-          <Navbar.Brand className="mx-4" to="#home">
+        <Navbar bg="light" expand="lg" style={{ paddingRight: "1rem" }}>
+          <Navbar.Brand
+            className="mx-4"
+            as={NavLink}
+            to={userDets?.role === "Admin" ? "/admin" : "/"}
+          >
             Leave management
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <strong className="navbar-text">
-                Hello, {userDets?.staffName}
-              </strong>
-              <Nav.Link
+              {/* <Nav.Link
                 as={NavLink}
-                to={
-                  userDets?.role === "Admin"
-                    ? "/admin"
-                    : userDets.role !== "Principal"
-                    ? "/"
-                    : "/principal"
-                }
+                to={userDets?.role === "Admin" ? "/admin" : "/"}
               >
                 Home
-              </Nav.Link>
+              </Nav.Link> */}
               {userDets.role !== "Admin" && (
                 <Nav.Link as={NavLink} to="/profile">
                   My profile
                 </Nav.Link>
               )}
-
-              {userDets.role !== "Principal" && (
-                <Nav.Link
-                  as={NavLink}
-                  to={
-                    userDets?.role === "Admin"
-                      ? "/leaveRequests"
-                      : "/createLeave"
-                  }
-                >
-                  {userDets?.role === "Admin"
-                    ? "Incoming Leave Requests"
-                    : "Create a new leave"}
+              {userDets?.role === "Principal" && (
+                <Nav.Link as={NavLink} to="/principal">
+                  View Staff
                 </Nav.Link>
               )}
-              {userDets.role === "Hod" && (
+
+              <Nav.Link
+                as={NavLink}
+                to={
+                  userDets?.role === "Admin" ? "/leaveRequests" : "/createLeave"
+                }
+              >
+                {userDets?.role === "Admin"
+                  ? "Incoming Leave Requests"
+                  : "Create a new leave"}
+              </Nav.Link>
+
+              {userDets?.role === "Hod" && (
                 <Nav.Link as={NavLink} to={"/viewStaff"}>
                   View Staff
                 </Nav.Link>
               )}
             </Nav>
           </Navbar.Collapse>
-
+          <strong className="navbar-text">
+            Hello, {userDets?.designation}. {userDets.staffName}
+          </strong>
           <Button
             className="d-flex mx-4"
             variant="primary"
             onClick={() => {
-              localStorage.removeItem("storedUser");
+              localStorage.clear();
               navigate("/login");
             }}
           >

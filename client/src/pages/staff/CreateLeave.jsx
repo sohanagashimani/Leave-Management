@@ -22,6 +22,7 @@ function CreateLeave() {
   const multipleSubStaff = [];
   const [leaveData, setLeaveData] = useState({
     userId: userDets?._id,
+    designation: userDets?.designation,
     department: userDets?.department,
     name: userDets?.staffName,
   });

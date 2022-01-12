@@ -10,6 +10,7 @@ import NavBar from "./components/NavBar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ViewStaff from "./pages/View Staff/ViewStaff";
+import { Slide } from "react-toastify";
 
 function App() {
   // hello
@@ -17,9 +18,11 @@ function App() {
     <>
       <ToastContainer
         position="bottom-right"
-        autoClose={2000}
+        pauseOnHover={false}
+        autoClose={1900}
         hideProgressBar={false}
         newestOnTop={false}
+        transition={Slide}
         closeOnClick
       />
       <Router>

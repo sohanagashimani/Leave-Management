@@ -3,7 +3,6 @@ const app = express();
 var cors = require("cors");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-const morgan = require("morgan");
 const staffRoute = require("./routes/staff");
 const authRoute = require("./routes/auth");
 const leaveRoute = require("./routes/leave");
@@ -23,7 +22,6 @@ mongoose
   .catch((err) => console.log(err));
 
 app.use(express.json());
-app.use(morgan("common"));
 
 app.use("/api/staff", staffRoute);
 app.use("/api/auth", authRoute);

@@ -28,11 +28,12 @@ function Create() {
   }, [userChange]);
   const validate = (values) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phregex = /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/im;
-
     const errors = {};
     if (!values.staffId) {
       errors.staffId = "Staff Id is required ";
+    }
+    if (!values.designation) {
+      errors.designation = "Designation is required ";
     }
     if (!values.staffName) {
       errors.staffName = "Staff name  is required ";
@@ -50,8 +51,6 @@ function Create() {
     }
     if (!values.phnumber) {
       errors.phnumber = "Phone number  is required ";
-    } else if (!phregex.test(values.phnumber)) {
-      errors.phnumber = "Enter a valid phone number";
     }
     if (!values.role) {
       errors.role = "Role is required ";
@@ -66,7 +65,6 @@ function Create() {
     }
     return errors;
   };
-
   useEffect(() => {
     async function callUserApi() {
       if (userDets?.role === "Admin") {
@@ -104,21 +102,33 @@ function Create() {
         user
       );
 
-      if (json.data.success === false) {
-        toast.error(json.data.msg);
-      } else if (json.data.success) {
+      if (json.data.success) {
         toast.success("user successfully created");
+        clearFields(e);
+        setUser({});
+      } else if (json.data.success === false) {
+        toast.error(json.data.msg);
+      } else {
+        json.data.forEach((element) => {
+          toast.error(element.msg);
+        });
       }
     } catch (error) {
+      clearFields(e);
       console.log(error);
     }
-    setuserChange(!userChange);
+    setuserChange2(!userChange2);
+  };
+  const clearFields = (e) => {
+    Array.from(e.target).forEach((e) => (e.value = ""));
   };
 
   const deleteUserFrontend = async (user) => {
     const deleteResponse = await deleteUser(user._id);
     if (deleteResponse) {
-      toast.success(deleteResponse);
+      toast.success(deleteResponse, {
+        autoClose: 1200,
+      });
     } else {
       toast.error("internal server error");
     }
@@ -162,9 +172,23 @@ function Create() {
                 onChange={handleChange}
                 name="staffId"
                 type="text"
-                placeholder="Staff Id"
+                placeholder="Enter Staff Id"
               />
               <p className="text-danger">{formErrors.staffId}</p>
+            </Col>
+          </Form.Group>
+          <Form.Group as={Row} className="mb-3" controlId="formPlaintextEmail">
+            <Form.Label column sm="2">
+              Designation
+            </Form.Label>
+            <Col sm="10">
+              <Form.Control
+                onChange={handleChange}
+                name="designation"
+                type="text"
+                placeholder="Enter designation"
+              />
+              <p className="text-danger">{formErrors.designation}</p>
             </Col>
           </Form.Group>
           <Form.Group as={Row} className="mb-3" controlId="formPlaintextEmail">
@@ -176,7 +200,7 @@ function Create() {
                 onChange={handleChange}
                 name="staffName"
                 type="text"
-                placeholder="Staff Name"
+                placeholder="Enter Staff Name"
               />
               <p className="text-danger">{formErrors.staffName}</p>
             </Col>
@@ -190,7 +214,7 @@ function Create() {
                 onChange={handleChange}
                 type="email"
                 name="email"
-                placeholder="Email"
+                placeholder="Enter Email"
               />
               <p className="text-danger">{formErrors.email}</p>
             </Col>
@@ -204,7 +228,7 @@ function Create() {
                 onChange={handleChange}
                 type="Password"
                 name="password"
-                placeholder="Password"
+                placeholder="Enter Password"
               />
               <p className="text-danger">{formErrors.password}</p>
             </Col>
@@ -231,7 +255,7 @@ function Create() {
                 onChange={handleChange}
                 type="tel"
                 name="phnumber"
-                placeholder="Phone Number"
+                placeholder="Enter Phone Number"
               />
               <p className="text-danger">{formErrors.phnumber}</p>
             </Col>
@@ -325,6 +349,7 @@ function Create() {
         <div className="dropdown">
           <label>Filter staff by department</label>
           <select
+            className="btn btn-light dropdown-toggle"
             onChange={filterDepartment}
             label="Select Department to view staff"
           >
@@ -367,6 +392,7 @@ function Create() {
           <thead>
             <tr>
               <th>Staff ID</th>
+              <th>Designation</th>
               <th>Full Name</th>
               <th>Email </th>
               <th>Phone Number</th>
@@ -383,6 +409,7 @@ function Create() {
                   {user.role !== "Admin" && (
                     <>
                       <td>{user.staffId}</td>
+                      <td>{user.designation}</td>
                       <td>{user.staffName}</td>
                       <td>{user.email}</td>
                       <td>{user.phnumber}</td>

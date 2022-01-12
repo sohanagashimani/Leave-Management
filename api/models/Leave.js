@@ -9,6 +9,10 @@ const LeaveSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    designation: {
+      type: String,
+      required: true,
+    },
     subject: {
       type: String,
       required: true,
@@ -16,7 +20,6 @@ const LeaveSchema = new mongoose.Schema(
     },
     department: {
       type: String,
-      required: true,
     },
     type: {
       type: String,

@@ -28,7 +28,7 @@ function Hodrequests() {
   const populateModal = (modalDeets) => {
     setModalDetails(modalDeets);
   };
-
+  // console.log(requestsForAdminArr);
   return (
     <>
       <div className="container my-5">
@@ -36,6 +36,7 @@ function Hodrequests() {
         <Table striped bordered hover>
           <thead>
             <tr className="theads">
+              <th>Designation</th>
               <th>Full Name</th>
               <th>Subject</th>
               <th>Start date</th>
@@ -44,9 +45,10 @@ function Hodrequests() {
             </tr>
           </thead>
           <tbody>
-            {[...requestsForAdminArr].reverse()?.map((leaveReq) => {
+            {requestsForAdminArr.map((leaveReq) => {
               return (
                 <tr key={leaveReq._id}>
+                  <td className="center">{leaveReq.designation}</td>
                   <td className="center">{leaveReq.name}</td>
                   <td className="center">{leaveReq.subject}</td>
                   <td className="center">

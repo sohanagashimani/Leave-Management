@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import LeaveContext from "../../context/LeaveContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import logo from "./jgi.png";
 import "react-toastify/dist/ReactToastify.css";
 function Login() {
   const userContext = useContext(LeaveContext);
@@ -35,15 +36,17 @@ function Login() {
         const localUserDetails = JSON.parse(localStorage.getItem("storedUser"));
         if (localUserDetails?.success) {
           const userDets = localUserDetails?.user;
-          if (userDets?.role === "Staff" || userDets?.role === "Hod") {
+          if (
+            userDets?.role === "Staff" ||
+            userDets?.role === "Hod" ||
+            userDets?.role === "Principal"
+          ) {
             navigate("/");
-          } else if (userDets?.role === "Principal") {
-            navigate("/principal");
           } else if (userDets?.role === "Admin") {
             navigate("/admin");
           }
         } else if (user.email && user.password) {
-          toast.error("Wrong credentials");
+          toast.error(res.msg);
         }
       } else {
         toast.error("internal server error");
@@ -63,10 +66,8 @@ function Login() {
 
   return (
     <div className="vertical-center">
-      <div
-        className=" container border border-dark rounded"
-        style={{ padding: "1rem", width: "30%" }}
-      >
+      <img className="logo" src={logo} alt="" />
+      <div className=" loginContainer">
         <form className="requires-validation" onSubmit={handleOnSubmit}>
           <div className="mb-3">
             <label htmlFor="exampleInputEmail1" className="form-label">

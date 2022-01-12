@@ -4,15 +4,34 @@
 }
 
 .vertical-center {
-  min-height: 100%; /* Fallback for browsers do NOT support vh unit */
-  min-height: 100vh; /* These two lines are counted as one :-)       */
+  /* min-height: 100%; Fallback for browsers do NOT support vh unit */
+  height: auto;
+  min-height: 90vh;
   display: flex;
   align-items: center;
+  justify-content: space-evenly;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.logo {
+  padding: 1rem;
+}
+.loginContainer {
+  font-size: large;
+  width: 40rem;
+  outline: none;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border-radius: 35px 35px 35px 35px;
+  -webkit-border-radius: 35px 35px 35px 35px;
+  -moz-border-radius: 35px 35px 35px 35px;
 }
 .leaveReqDiv {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
+  /* gap: 0rem 30rem; */
   justify-content: space-around;
 }
 
@@ -20,16 +39,16 @@
   text-align: center;
   border: 0.1rem black solid;
   height: fit-content;
-  width:57rem;
+  width: 56rem;
   padding: 1rem;
-  margin: 2rem 1rem 1rem 1rem;
+  margin: 2.5rem 2rem 2rem 2rem;
 }
 
 .recievedRequests {
   text-align: center;
-  width:57rem;
+  width: 56rem;
   padding: 1rem;
-  margin: 2rem 1rem 1rem 1rem;
+  margin: 2.5rem 2rem 2rem 1rem;
   border: 0.1rem black solid;
   height: fit-content;
 }
@@ -51,3 +70,19 @@
 .pwdBox {
   width: 100%;
 }
+.contents {
+  border: 1px solid black;
+  padding: 1rem;
+}
+.dropdown {
+  margin-bottom: 1rem;
+}
+.dropdown label {
+  font-size: large;
+}
+.dropdown-toggle {
+  width: fit-content;
+  margin-left: 1rem;
+  background-color: rgba(231, 229, 229, 0.938);
+}
+

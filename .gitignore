@@ -2,3 +2,6 @@ node_modules
 .env
 clgMail.txt
 mail.html
+myMongo.txt
+todo.txt
+clgMongo.txt

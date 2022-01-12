@@ -7,21 +7,22 @@ const { body, validationResult } = require("express-validator");
 router.post(
   "/register",
   [
-    body("email", "enter a valid email").isEmail(),
-    body("phnumber", "enter a valid phone-number").isMobilePhone(),
+    body("email", "Enter a valid email").isEmail(),
+    body("phnumber", "Enter a valid phone-number").isMobilePhone(),
+    body("staffName", "Enter a valid name").isLength({ min: 3 }),
+    body("password", "Enter a valid password").isLength({ min: 3 }),
+    body("designation", "Enter a valid designation").isLength({ min: 3 }),
+    body("staffId", "Enter a valid staffId").isLength({ min: 1 }),
+    body("joiningDate", "Enter a valid date").notEmpty(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(200).json({ errors: errors.array() });
+      return res.status(200).send(errors.array());
     }
     try {
       let user = await Staff.findOne({
-        $or: [
-          { email: req.body.email },
-          { staffId: req.body.staffId },
-          { phnumber: req.body.phnumber },
-        ],
+        $or: [{ email: req.body.email }, { staffId: req.body.staffId }],
       });
 
       if (user) {
@@ -35,11 +36,6 @@ router.post(
             success: false,
             msg: " A user with this Staff Id already exists",
           });
-        } else {
-          return res.status(200).json({
-            success: false,
-            msg: " A user with this phone number already exists",
-          });
         }
       }
       //generating password
@@ -52,6 +48,7 @@ router.post(
         staffName: req.body.staffName,
         staffId: req.body.staffId,
         email: req.body.email,
+        designation: req.body.designation,
         password: hashedPassword,
         phnumber: req.body.phnumber,
         role: req.body.role,
@@ -78,14 +75,14 @@ router.post("/login", async (req, res) => {
       email: req.body.email,
     });
     if (!user) {
-      return res.status(200).json({ msg: "user not found", success: false });
+      return res.status(200).json({ msg: "User not found", success: false });
     }
     const validPassword = await bcrypt.compare(
       req.body.password,
       user.password
     );
     if (!validPassword) {
-      return res.status(200).json({ msg: "wrong password", success: false });
+      return res.status(200).json({ msg: "Wrong password", success: false });
     }
     if (user.type !== "Regular") {
       const currentDate = new Date();

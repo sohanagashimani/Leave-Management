@@ -2,10 +2,24 @@ const router = require("express").Router();
 const nodemailer = require("nodemailer");
 const Leave = require("../models/Leave");
 const Staff = require("../models/Staff");
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  host: "localhost",
+  port: 587,
+  secure: false,
+  auth: {
+    user: "leavems@jainbgm.in", // generated ethereal user
+    pass: "j@im1234", // generated ethereal password
+  },
+  tls: {
+    rejectUnauthorized: false,
+  },
+});
+
 // create a leave request
 router.post("/", async (req, res) => {
   try {
-    const subject = req.body.subject;
     const newLeave = new Leave({
       userId: req.body.userId,
       subject: req.body.subject,
@@ -18,6 +32,7 @@ router.post("/", async (req, res) => {
       dateStart: req.body.dateStart,
       dateEnd: req.body.dateEnd,
       name: req.body.name,
+      designation: req.body.designation,
       noOfDays: req.body.noOfDays,
     });
     const names = req.body.subStaffArr.map((user) => {
@@ -38,34 +53,20 @@ router.post("/", async (req, res) => {
       }
     });
     const savedLeave = await newLeave.save();
-    let transporter = nodemailer.createTransport({
-      service: "gmail",
-      host: "localhost",
-      port: 587,
-      secure: false,
-      auth: {
-        user: "leavems@jainbgm.in", // generated ethereal user
-        pass: "j@im1234", // generated ethereal password
-      },
-      tls: {
-        rejectUnauthorized: false,
-      },
-    });
+
     // send mail with defined transport object
     udpatedStaffEmail.forEach(async (user) => {
       let info = await transporter.sendMail({
         from: `"Jain College of Engineering" leavems@jainbgm.in`, // sender address
         to: `${user.email}`, // list of receivers
-        subject: `New Substitute Request from ${savedLeave.name}`, // Subject line
+        subject: `New Substitute Request from ${savedLeave.designation}. ${savedLeave.name}`, // Subject line
         html: `<ul style="list-style:none;color:black">
-        <li>Name: ${savedLeave.name}.</li>
         <li>Subject: ${savedLeave.subject}.</li>
         <li>Description: ${savedLeave.body}.</li>
         <li>Please visit <a href="#" style="text-decoration: none;color: blue;">Leave-management software</a> to accept/decline the request</li>
     </ul>`, // html body
       });
       console.log("Message sent: %s", info.messageId);
-      console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
     });
 
     res.status(200).json({ savedLeave, msg: "Leave request sent" });
@@ -101,7 +102,9 @@ router.get("/hod/:department", async (req, res) => {
 // get admin specific requests(hod's requests)
 router.get("/", async (req, res) => {
   try {
-    const user = await Staff.find({ role: "Hod" });
+    const user = await Staff.find({
+      $or: [{ role: "Hod" }, { role: "Principal" }],
+    });
 
     if (!user) return res.status(200).send([], "no hods found");
     const reqForAdmin = await Promise.all(
@@ -155,11 +158,12 @@ router.put(
           }
         });
         const user = await Staff.findOne({ staffName: req.params.staffName });
-        const hodUserRole = await Staff.findById(leave.userId);
+        const userRole = await Staff.findById(leave.userId);
         const hod = await Staff.findOne({
           department: user.department,
           role: "Hod",
         });
+        const admin = await Staff.findOne({ role: "Admin" });
         // console.log(hod.email);
 
         await Leave.findByIdAndUpdate(req.params.leaveId, {
@@ -174,29 +178,14 @@ router.put(
         const byStaffPendingBoolean = leave.subStaffArr.some(
           (user) => user.status === 0
         );
-
         if (byStaffApprovalBoolean) {
           byStaffApproval = 1;
-          if (hodUserRole === "Staff") {
-            let transporter = nodemailer.createTransport({
-              service: "gmail",
-              host: "localhost",
-              port: 587,
-              secure: false,
-              auth: {
-                user: "leavems@jainbgm.in", // generated ethereal user
-                pass: "j@im1234", // generated ethereal password
-              },
-              tls: {
-                rejectUnauthorized: false,
-              },
-            });
+          if (userRole.role === "Staff") {
             // send mail with defined transport object
-
             let info = await transporter.sendMail({
               from: `"Jain College of Engineering" leavems@jainbgm.in`, // sender address
               to: `${hod.email}`, // list of receivers
-              subject: `New Substitute Request from ${leave.name}`, // Subject line
+              subject: `New leave request from ${leave.designation}. ${leave.name}`, // Subject line
               html: `<ul style="list-style:none;color:black">
               <li>Subject: ${leave.subject}</li>
               <li>Description: ${leave.body} </li>
@@ -204,24 +193,23 @@ router.put(
           </ul>`, // html body
             });
             console.log("Message sent: %s", info.messageId);
-            console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+          } else if (userRole.role === "Hod" || userRole.role === "Principal") {
+            let info = await transporter.sendMail({
+              from: `"Jain College of Engineering" leavems@jainbgm.in`, // sender address
+              to: `${admin.email}`, // list of receivers
+              subject: `New leave request from ${leave.designation}. ${leave.name}`, // Subject line
+              html: `<ul style="list-style:none;color:black">
+              <li>Subject: ${leave.subject}</li>
+              <li>Description: ${leave.body} </li>
+              <li>Please visit <a href="#" style="text-decoration: none;color: blue;">Leave-management software</a> to accept/decline the request</li>
+          </ul>`, // html body
+            });
+            console.log("Message sent: %s", info.messageId);
           }
         } else if (byStaffDeclinedBoolean && !byStaffPendingBoolean) {
           byStaffApproval = 2;
           await Leave.findById(req.params.leaveId);
-          let transporter = nodemailer.createTransport({
-            service: "gmail",
-            host: "localhost",
-            port: 587,
-            secure: false,
-            auth: {
-              user: "leavems@jainbgm.in", // generated ethereal user
-              pass: "j@im1234", // generated ethereal password
-            },
-            tls: {
-              rejectUnauthorized: false,
-            },
-          });
+
           // send mail with defined transport object
           let info = await transporter.sendMail({
             from: `"Jain College of Engineering" leavems@jainbgm.in`, // sender address
@@ -231,7 +219,6 @@ router.put(
             style="text-decoration: none;color: blue;">Leave-management software</a> for further details.</p>`, // html body
           });
           console.log("Message sent: %s", info.messageId);
-          console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
         } else {
           byStaffApproval = 0;
         }
@@ -248,44 +235,16 @@ router.put(
         const userId = await leaveStatus.userId;
         const user = await Staff.findById(userId);
         if (leaveStatus.byHod === 1) {
-          let transporter = nodemailer.createTransport({
-            service: "gmail",
-            host: "localhost",
-            port: 587,
-            secure: false,
-            auth: {
-              user: "leavems@jainbgm.in", // generated ethereal user
-              pass: "j@im1234", // generated ethereal password
-            },
-            tls: {
-              rejectUnauthorized: false,
-            },
-          });
           // send mail with defined transport object
-
           let info = await transporter.sendMail({
             from: `"Jain College of Engineering" leavems@jainbgm.in`, // sender address
             to: `${user.email}`, // list of receivers
-            subject: `Leave Request Accepted`, // Subject line
-            html: `<p><span>Your leave request has been <b style="color: green;">Accepted</b>.</span><br> Visit <a href="#"
+            subject: `Leave Request Approved`, // Subject line
+            html: `<p><span>Your leave request has been <b style="color: green;">Approved</b>.</span><br> Visit <a href="#"
             style="text-decoration: none;color: blue;">Leave-management software</a> for further details.</p>`, // html body
           });
           console.log("Message sent: %s", info.messageId);
-          console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
         } else if (leaveStatus.byHod === 2) {
-          let transporter = nodemailer.createTransport({
-            service: "gmail",
-            host: "localhost",
-            port: 587,
-            secure: false,
-            auth: {
-              user: "leavems@jainbgm.in", // generated ethereal user
-              pass: "j@im1234", // generated ethereal password
-            },
-            tls: {
-              rejectUnauthorized: false,
-            },
-          });
           // send mail with defined transport object
           let info = await transporter.sendMail({
             from: `"Jain College of Engineering" leavems@jainbgm.in`, // sender address
@@ -295,7 +254,6 @@ router.put(
             style="text-decoration: none;color: blue;">Leave-management software</a> for further details.</p>`, // html body
           });
           console.log("Message sent: %s", info.messageId);
-          console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
         }
         if (leaveStatus.byHod === 1 && leaveStatus.type === "Casual") {
           if (user.type === "Regular") {
@@ -330,44 +288,17 @@ router.put(
         const userId = await leaveStatus.userId;
         const user = await Staff.findById(userId);
         if (leaveStatus.byAdmin === 1) {
-          let transporter = nodemailer.createTransport({
-            service: "gmail",
-            host: "localhost",
-            port: 587,
-            secure: false,
-            auth: {
-              user: "leavems@jainbgm.in", // generated ethereal user
-              pass: "j@im1234", // generated ethereal password
-            },
-            tls: {
-              rejectUnauthorized: false,
-            },
-          });
           // send mail with defined transport object
 
           let info = await transporter.sendMail({
             from: `"Jain College of Engineering" leavems@jainbgm.in`, // sender address
             to: `${user.email}`, // list of receivers
-            subject: `Leave Request Accepted`, // Subject line
-            html: `<p><span>Your leave request has been <b style="color: green;">Accepted</b>.</span><br> Visit <a href="#"
+            subject: `Leave Request Approved`, // Subject line
+            html: `<p><span>Your leave request has been <b style="color: green;">Approved</b>.</span><br> Visit <a href="#"
             style="text-decoration: none;color: blue;">Leave-management software</a> for further details.</p>`, // html body
           });
           console.log("Message sent: %s", info.messageId);
-          console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
         } else if (leaveStatus.byAdmin === 2) {
-          let transporter = nodemailer.createTransport({
-            service: "gmail",
-            host: "localhost",
-            port: 587,
-            secure: false,
-            auth: {
-              user: "leavems@jainbgm.in", // generated ethereal user
-              pass: "j@im1234", // generated ethereal password
-            },
-            tls: {
-              rejectUnauthorized: false,
-            },
-          });
           // send mail with defined transport object
           let info = await transporter.sendMail({
             from: `"Jain College of Engineering" leavems@jainbgm.in`, // sender address
@@ -377,7 +308,6 @@ router.put(
             style="text-decoration: none;color: blue;">Leave-management software</a> for further details.</p>`, // html body
           });
           console.log("Message sent: %s", info.messageId);
-          console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
         }
         if (leaveStatus.byAdmin === 1 && leaveStatus.type === "Casual") {
           if (user.type === "Regular") {
