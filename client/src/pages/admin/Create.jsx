@@ -103,7 +103,7 @@ function Create() {
       );
 
       if (json.data.success) {
-        toast.success("user successfully created");
+        toast.success("User successfully created");
         clearFields(e);
         setUser({});
       } else if (json.data.success === false) {
