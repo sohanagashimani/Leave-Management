@@ -40,9 +40,13 @@ function ViewStaff() {
 
   return (
     <>
-      <div className="container center">
-        <h1 className="my-4 text-center">{userDets.department} Staff</h1>
-
+      <h1 className="my-4 text-center">{userDets.department} Staff</h1>
+      <div
+        className="container center"
+        style={{
+          overflowX: "auto",
+        }}
+      >
         <Table striped bordered hover>
           <thead>
             <tr>

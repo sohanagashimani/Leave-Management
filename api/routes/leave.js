@@ -59,7 +59,7 @@ router.post("/", async (req, res) => {
       let info = await transporter.sendMail({
         from: `"Jain College of Engineering" leavems@jainbgm.in`, // sender address
         to: `${user.email}`, // list of receivers
-        subject: `New Substitute Request from ${savedLeave.designation}. ${savedLeave.name}`, // Subject line
+        subject: `New Substitute Request by ${savedLeave.designation}. ${savedLeave.name}`, // Subject line
         html: `<ul style="list-style:none;color:black">
         <li>Subject: ${savedLeave.subject}.</li>
         <li>Description: ${savedLeave.body}.</li>
@@ -185,7 +185,7 @@ router.put(
             let info = await transporter.sendMail({
               from: `"Jain College of Engineering" leavems@jainbgm.in`, // sender address
               to: `${hod.email}`, // list of receivers
-              subject: `New leave request from ${leave.designation}. ${leave.name}`, // Subject line
+              subject: `New leave request by ${leave.designation}. ${leave.name}`, // Subject line
               html: `<ul style="list-style:none;color:black">
               <li>Subject: ${leave.subject}</li>
               <li>Description: ${leave.body} </li>
@@ -197,7 +197,7 @@ router.put(
             let info = await transporter.sendMail({
               from: `"Jain College of Engineering" leavems@jainbgm.in`, // sender address
               to: `${admin.email}`, // list of receivers
-              subject: `New leave request from ${leave.designation}. ${leave.name}`, // Subject line
+              subject: `New leave request by ${leave.designation}. ${leave.name}`, // Subject line
               html: `<ul style="list-style:none;color:black">
               <li>Subject: ${leave.subject}</li>
               <li>Description: ${leave.body} </li>

@@ -66,18 +66,21 @@ function NavBar() {
   };
   return (
     <>
-      {userDets ? (
-        <Navbar bg="light" expand="lg" style={{ paddingRight: "1rem" }}>
+      {userDets && (
+        <Navbar bg="light" expand="lg">
           <Navbar.Brand
-            className="mx-4"
+            className="mx-2"
             as={NavLink}
             to={userDets?.role === "Admin" ? "/admin" : "/"}
           >
             Leave management
           </Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Toggle
+            aria-controls="basic-navbar-nav"
+            style={{ marginRight: "0.7rem" }}
+          />
           <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto">
+            <Nav className="me-auto mx-2">
               {/* <Nav.Link
                 as={NavLink}
                 to={userDets?.role === "Admin" ? "/admin" : "/"}
@@ -112,29 +115,28 @@ function NavBar() {
                 </Nav.Link>
               )}
             </Nav>
+            <strong className="navbar-text mx-2 helloNav">
+              Hello, {userDets?.designation}. {userDets.staffName}
+            </strong>
+            <Button
+              className="d-flex mx-2 chpwd"
+              variant="primary"
+              onClick={() => {
+                localStorage.clear();
+                navigate("/login");
+              }}
+            >
+              Logout
+            </Button>
+            <button
+              type="button"
+              className="btn btn-primary mx-2 chpwd"
+              data-bs-toggle="modal"
+              data-bs-target="#exampleModal"
+            >
+              Change Password
+            </button>
           </Navbar.Collapse>
-          <strong className="navbar-text">
-            Hello, {userDets?.designation}. {userDets.staffName}
-          </strong>
-          <Button
-            className="d-flex mx-4"
-            variant="primary"
-            onClick={() => {
-              localStorage.clear();
-              navigate("/login");
-            }}
-          >
-            Logout
-          </Button>
-
-          <button
-            type="button"
-            className="btn btn-primary"
-            data-bs-toggle="modal"
-            data-bs-target="#exampleModal"
-          >
-            Change Password
-          </button>
 
           <div
             className="modal fade"
@@ -200,12 +202,6 @@ function NavBar() {
               </div>
             </div>
           </div>
-        </Navbar>
-      ) : (
-        <Navbar bg="light" expand="lg">
-          <Navbar.Brand className="mx-4" to="#home">
-            Leave management
-          </Navbar.Brand>
         </Navbar>
       )}
     </>

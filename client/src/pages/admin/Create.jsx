@@ -388,61 +388,63 @@ function Create() {
             </option>
           </select>
         </div>
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th>Staff ID</th>
-              <th>Designation</th>
-              <th>Full Name</th>
-              <th>Email </th>
-              <th>Phone Number</th>
-              <th>Role</th>
-              <th>Type</th>
-              <th>Leaves remaining</th>
-              <th>Department</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredArr?.map((user) => {
-              return (
-                <tr key={user.staffId}>
-                  {user.role !== "Admin" && (
-                    <>
-                      <td>{user.staffId}</td>
-                      <td>{user.designation}</td>
-                      <td>{user.staffName}</td>
-                      <td>{user.email}</td>
-                      <td>{user.phnumber}</td>
-                      <td>{user.role}</td>
-                      <td>{user.type}</td>
-                      <td>
-                        {user.type === "Regular" ? (
-                          <span>
-                            {user.earnedLeaves + user.regularStaffLeaves}
+        <div style={{ overflowX: "auto" }}>
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>Staff ID</th>
+                <th>Designation</th>
+                <th>Full Name</th>
+                <th>Email </th>
+                <th>Phone Number</th>
+                <th>Role</th>
+                <th>Type</th>
+                <th>Leaves remaining</th>
+                <th>Department</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredArr?.map((user) => {
+                return (
+                  <tr key={user.staffId}>
+                    {user.role !== "Admin" && (
+                      <>
+                        <td>{user.staffId}</td>
+                        <td>{user.designation}</td>
+                        <td>{user.staffName}</td>
+                        <td>{user.email}</td>
+                        <td>{user.phnumber}</td>
+                        <td>{user.role}</td>
+                        <td>{user.type}</td>
+                        <td>
+                          {user.type === "Regular" ? (
+                            <span>
+                              {user.earnedLeaves + user.regularStaffLeaves}
+                            </span>
+                          ) : (
+                            <span>{user.probationStaffLeaves}</span>
+                          )}
+                        </td>
+                        <td
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            cursor: "pointer",
+                          }}
+                        >
+                          <span>{user.department}</span>
+                          <span onClick={() => deleteUserFrontend(user)}>
+                            <DeleteOutlineTwoToneIcon />
                           </span>
-                        ) : (
-                          <span>{user.probationStaffLeaves}</span>
-                        )}
-                      </td>
-                      <td
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          cursor: "pointer",
-                        }}
-                      >
-                        <span>{user.department}</span>
-                        <span onClick={() => deleteUserFrontend(user)}>
-                          <DeleteOutlineTwoToneIcon />
-                        </span>
-                      </td>
-                    </>
-                  )}
-                </tr>
-              );
-            })}
-          </tbody>
-        </Table>
+                        </td>
+                      </>
+                    )}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
+        </div>
       </div>
     </>
   );

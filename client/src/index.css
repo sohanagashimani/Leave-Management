@@ -31,7 +31,7 @@
   flex-wrap: wrap;
   flex-direction: row;
   /* gap: 0rem 30rem; */
-  justify-content: space-around;
+  justify-content: space-between;
 }
 
 .myRequests {
@@ -47,7 +47,7 @@
   text-align: center;
   width: 56rem;
   padding: 1rem;
-  margin: 2.5rem 2rem 2rem 1rem;
+  margin: 2.5rem 2rem 2rem 2rem;
   border: 0.1rem black solid;
   height: fit-content;
 }
@@ -58,8 +58,9 @@
 .leaveForm {
   padding: 1rem;
   border-radius: 0.2rem;
+  margin: 5rem auto 2rem auto;
+  width: 90rem;
   border: 0.1rem black solid;
-  margin-top: 5rem;
 }
 
 .leaveForm h1 {
@@ -81,7 +82,44 @@
 }
 .dropdown-toggle {
   width: fit-content;
-  margin-left: 1rem;
+  margin-left: 0.1rem;
   background-color: rgba(231, 229, 229, 0.938);
 }
+.profileIcon {
+  width: 15rem;
+  height: 15rem;
+  padding: 0.6rem;
+  margin: auto;
+}
+@media only screen and (max-width: 1602px) {
+  .leaveForm {
+    width: 50rem;
+  }
+}
 
+@media only screen and (max-width: 1099px) {
+  .helloNav {
+    display: none;
+  }
+  .chpwd {
+    margin-bottom: 0.5rem;
+  }
+  .profileWrapper {
+    margin: 0.7rem;
+  }
+  .logo {
+    height: 15rem;
+    width: 15rem;
+  }
+  .loginContainer {
+    margin: 1rem;
+  }
+  .leaveForm {
+    width: 30rem;
+  }
+}
+@media only screen and (max-width: 430px) {
+  .leaveForm {
+    width: 21rem;
+  }
+}

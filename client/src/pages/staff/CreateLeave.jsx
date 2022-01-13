@@ -177,7 +177,7 @@ function CreateLeave() {
 
   return (
     <>
-      <div className="container leaveForm">
+      <div className=" leaveForm">
         {/* multiple select related code:  */}
 
         <h1>Apply for a new leave</h1>

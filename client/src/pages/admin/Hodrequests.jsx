@@ -31,8 +31,8 @@ function Hodrequests() {
   // console.log(requestsForAdminArr);
   return (
     <>
-      <div className="container my-5">
-        <h1 className="text-center mb-3">Incoming leave applications</h1>
+      <h1 className="text-center mt-4">Incoming leave applications</h1>
+      <div className="container mt-3" style={{ overflowX: "auto" }}>
         <Table striped bordered hover>
           <thead>
             <tr className="theads">

@@ -84,7 +84,7 @@ function LeaveRequest() {
 
   return (
     <div className="leaveReqDiv">
-      <div className="myRequests">
+      <div className="myRequests" style={{ overflowX: "auto" }}>
         <div>
           <h1>My leave requests</h1>
           <Table striped bordered hover>
@@ -329,335 +329,341 @@ function LeaveRequest() {
       </div>
 
       {userDets?.role !== "Principal" ? (
-        <div className="recievedRequests">
+        <>
+          <div className="recievedRequests" style={{ overflowX: "auto" }}>
           <h1>Substitution requests</h1>
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>Designation</th>
-                <th>Name</th>
-                <th>Subject</th>
-                <th>Start date</th>
-                <th>End date</th>
-                <th>Accept/Decline</th>
-              </tr>
-            </thead>
-            {userDets?.role === "Staff" ? (
-              <>
-                <tbody>
-                  {[...recievedLeaveArr].reverse().map((leaveReq) => {
-                    // console.log(modalDetails?.byStaff);
-                    return (
-                      <tr key={leaveReq._id}>
-                        <td className="center">{leaveReq.designation}</td>
-                        <td className="center">{leaveReq.name}</td>
-                        <td className="center">{leaveReq.subject}</td>
-                        <td className="center">
-                          {new Date(leaveReq.dateStart).toLocaleDateString()}
-                        </td>
-                        <td className="center">
-                          {new Date(leaveReq.dateEnd).toLocaleDateString()}
-                        </td>
+          <div></div>
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>Designation</th>
+                  <th>Name</th>
+                  <th>Subject</th>
+                  <th>Start date</th>
+                  <th>End date</th>
+                  <th>Accept/Decline</th>
+                </tr>
+              </thead>
+              {userDets?.role === "Staff" ? (
+                <>
+                  <tbody>
+                    {[...recievedLeaveArr].reverse().map((leaveReq) => {
+                      // console.log(modalDetails?.byStaff);
+                      return (
+                        <tr key={leaveReq._id}>
+                          <td className="center">{leaveReq.designation}</td>
+                          <td className="center">{leaveReq.name}</td>
+                          <td className="center">{leaveReq.subject}</td>
+                          <td className="center">
+                            {new Date(leaveReq.dateStart).toLocaleDateString()}
+                          </td>
+                          <td className="center">
+                            {new Date(leaveReq.dateEnd).toLocaleDateString()}
+                          </td>
 
-                        <td
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-around",
-                            cursor: "pointer",
-                          }}
-                        >
-                          {leaveReq.subStaffArr.some((element) => {
-                            if (element.name === userDets.staffName) {
-                              if (element.status === 0) return true;
-                            }
-                            return false;
-                          }) ? (
-                            <button
-                              type="button"
-                              className="btn btn-primary "
-                              data-bs-toggle="modal"
-                              data-bs-target="#bbb"
-                              onClick={() => populateModal(leaveReq)}
-                            >
-                              View
-                            </button>
-                          ) : (
-                            <span>
-                              {leaveReq.subStaffArr.some((user) => {
-                                if (user.name === userDets.staffName) {
-                                  if (user.status === 1) {
-                                    return true;
-                                  }
-                                }
-                                return false;
-                              }) ? (
-                                <span className="text-success">Accepted</span>
-                              ) : (
-                                <span className="text-danger">Declined</span>
-                              )}
-                            </span>
-                          )}
-
-                          <div
-                            className="modal fade"
-                            id="bbb"
-                            tabIndex="-1"
-                            aria-labelledby="exampleModalLabel"
-                            aria-hidden="true"
+                          <td
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-around",
+                              cursor: "pointer",
+                            }}
                           >
-                            <div className="modal-dialog">
-                              <div className="modal-content">
-                                <div className="modal-header">
-                                  <h5
-                                    className="modal-title"
-                                    id="exampleModalLabel"
-                                  >
-                                    Leave request details
-                                  </h5>
-                                  <button
-                                    type="button"
-                                    className="btn-close"
-                                    data-bs-dismiss="modal"
-                                    aria-label="Close"
-                                  ></button>
-                                </div>
-                                <div className="modal-body ">
-                                  <h5>
-                                    Name:<span>{modalDetails?.name}</span>
-                                  </h5>
-                                  <h5>
-                                    Subject:<span>{modalDetails?.subject}</span>
-                                  </h5>
-                                  <h5>
-                                    Description:
-                                    <span>{modalDetails?.body}</span>
-                                  </h5>
-                                  <h5>
-                                    From:
-                                    <span>
-                                      {new Date(
-                                        modalDetails?.dateStart
-                                      ).toDateString()}
-                                    </span>
-                                  </h5>
-                                  <h5>
-                                    To:
-                                    <span>
-                                      {new Date(
-                                        modalDetails?.dateEnd
-                                      ).toDateString()}
-                                    </span>
-                                  </h5>
-                                </div>
-                                <div className="modal-footer">
-                                  <button
-                                    type="button"
-                                    className="btn btn-secondary"
-                                    data-bs-dismiss="modal"
-                                    onClick={async () => {
-                                      const res = await staffStatus(
-                                        modalDetails?._id,
-                                        1,
-                                        userDets?.role,
-                                        modalDetails?.noOfDays,
-                                        userDets?.staffName
-                                      );
-                                      if (res) {
-                                        setuserChange(!userChange);
-                                        toast.info("Accepted");
-                                      } else {
-                                        toast.danger("Internal server error");
-                                      }
-                                    }}
-                                  >
-                                    Accept
-                                  </button>
-                                  <button
-                                    type="button"
-                                    className="btn btn-primary"
-                                    data-bs-dismiss="modal"
-                                    onClick={async () => {
-                                      const res = await staffStatus(
-                                        modalDetails?._id,
-                                        2,
-                                        userDets?.role,
-                                        modalDetails?.noOfDays,
-                                        userDets?.staffName
-                                      );
-                                      if (res) {
-                                        setuserChange(!userChange);
-                                        toast.info("Declined");
-                                      } else {
-                                        toast.danger("Internal server error");
-                                      }
-                                    }}
-                                  >
-                                    Decline
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </>
-            ) : (
-              <>
-                <tbody>
-                  {[...requestesForHodArr].reverse().map((leaveReq) => {
-                    return (
-                      <tr key={leaveReq._id}>
-                        {leaveReq.userId !== userDets._id && (
-                          <>
-                            <td className="center">{leaveReq.designation}</td>
-                            <td className="center">{leaveReq.name}</td>
-                            <td className="center">{leaveReq.subject}</td>
-                            <td className="center">
-                              {new Date(
-                                leaveReq.dateStart
-                              ).toLocaleDateString()}
-                            </td>
-                            <td className="center">
-                              {new Date(leaveReq.dateEnd).toLocaleDateString()}
-                            </td>
-                            <td
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-around",
-                                cursor: "pointer",
-                              }}
-                            >
-                              {leaveReq.byHod === 0 ? (
-                                <button
-                                  type="button"
-                                  // ref={ref}
-                                  className="btn btn-primary "
-                                  data-bs-toggle="modal"
-                                  data-bs-target="#aaa"
-                                  onClick={() => populateModal(leaveReq)}
-                                >
-                                  View
-                                </button>
-                              ) : (
-                                <span>
-                                  {leaveReq.byHod === 1 ? (
-                                    <span className="text-success">
-                                      Accepted
-                                    </span>
-                                  ) : (
-                                    <span className="text-danger">
-                                      Declined
-                                    </span>
-                                  )}
-                                </span>
-                              )}
-                              <div
-                                className="modal fade"
-                                id="aaa"
-                                tabIndex="-1"
-                                aria-labelledby="exampleModalLabel"
-                                aria-hidden="true"
+                            {leaveReq.subStaffArr.some((element) => {
+                              if (element.name === userDets.staffName) {
+                                if (element.status === 0) return true;
+                              }
+                              return false;
+                            }) ? (
+                              <button
+                                type="button"
+                                className="btn btn-primary "
+                                data-bs-toggle="modal"
+                                data-bs-target="#bbb"
+                                onClick={() => populateModal(leaveReq)}
                               >
-                                <div className="modal-dialog">
-                                  <div className="modal-content">
-                                    <div className="modal-header">
-                                      <h5
-                                        className="modal-title"
-                                        id="exampleModalLabel"
-                                      >
-                                        Leave request details
-                                      </h5>
-                                      <button
-                                        type="button"
-                                        className="btn-close"
-                                        data-bs-dismiss="modal"
-                                        aria-label="Close"
-                                      ></button>
-                                    </div>
-                                    <div className="modal-body">
-                                      <h5>
-                                        Name:<span>{modalDetails?.name}</span>
-                                      </h5>
-                                      <h5>
-                                        Subject:
-                                        <span>{modalDetails?.subject}</span>
-                                      </h5>
-                                      <h5>
-                                        Description:
-                                        <span>{modalDetails?.body}</span>
-                                      </h5>
-                                      <h5>
-                                        From:
-                                        <span>
-                                          {new Date(
-                                            modalDetails?.dateStart
-                                          ).toDateString()}
-                                        </span>
-                                      </h5>
-                                      <h5>
-                                        To:
-                                        <span>
-                                          {new Date(
-                                            modalDetails?.dateEnd
-                                          ).toDateString()}
-                                        </span>
-                                      </h5>
-                                    </div>
-                                    <div className="modal-footer">
-                                      <button
-                                        type="button"
-                                        className="btn btn-secondary"
-                                        data-bs-dismiss="modal"
-                                        onClick={() => {
-                                          staffStatus(
-                                            modalDetails._id,
-                                            1,
-                                            userDets?.role,
-                                            modalDetails?.noOfDays,
-                                            userDets?.staffName
-                                          );
+                                View
+                              </button>
+                            ) : (
+                              <span>
+                                {leaveReq.subStaffArr.some((user) => {
+                                  if (user.name === userDets.staffName) {
+                                    if (user.status === 1) {
+                                      return true;
+                                    }
+                                  }
+                                  return false;
+                                }) ? (
+                                  <span className="text-success">Accepted</span>
+                                ) : (
+                                  <span className="text-danger">Declined</span>
+                                )}
+                              </span>
+                            )}
+
+                            <div
+                              className="modal fade"
+                              id="bbb"
+                              tabIndex="-1"
+                              aria-labelledby="exampleModalLabel"
+                              aria-hidden="true"
+                            >
+                              <div className="modal-dialog">
+                                <div className="modal-content">
+                                  <div className="modal-header">
+                                    <h5
+                                      className="modal-title"
+                                      id="exampleModalLabel"
+                                    >
+                                      Leave request details
+                                    </h5>
+                                    <button
+                                      type="button"
+                                      className="btn-close"
+                                      data-bs-dismiss="modal"
+                                      aria-label="Close"
+                                    ></button>
+                                  </div>
+                                  <div className="modal-body ">
+                                    <h5>
+                                      Name:<span>{modalDetails?.name}</span>
+                                    </h5>
+                                    <h5>
+                                      Subject:
+                                      <span>{modalDetails?.subject}</span>
+                                    </h5>
+                                    <h5>
+                                      Description:
+                                      <span>{modalDetails?.body}</span>
+                                    </h5>
+                                    <h5>
+                                      From:
+                                      <span>
+                                        {new Date(
+                                          modalDetails?.dateStart
+                                        ).toDateString()}
+                                      </span>
+                                    </h5>
+                                    <h5>
+                                      To:
+                                      <span>
+                                        {new Date(
+                                          modalDetails?.dateEnd
+                                        ).toDateString()}
+                                      </span>
+                                    </h5>
+                                  </div>
+                                  <div className="modal-footer">
+                                    <button
+                                      type="button"
+                                      className="btn btn-secondary"
+                                      data-bs-dismiss="modal"
+                                      onClick={async () => {
+                                        const res = await staffStatus(
+                                          modalDetails?._id,
+                                          1,
+                                          userDets?.role,
+                                          modalDetails?.noOfDays,
+                                          userDets?.staffName
+                                        );
+                                        if (res) {
                                           setuserChange(!userChange);
                                           toast.info("Accepted");
-                                        }}
-                                      >
-                                        Accept
-                                      </button>
-                                      <button
-                                        type="button"
-                                        className="btn btn-primary"
-                                        data-bs-dismiss="modal"
-                                        onClick={() => {
-                                          staffStatus(
-                                            modalDetails._id,
-                                            2,
-                                            userDets?.role,
-                                            modalDetails?.noOfDays,
-                                            userDets?.staffName
-                                          );
+                                        } else {
+                                          toast.danger("Internal server error");
+                                        }
+                                      }}
+                                    >
+                                      Accept
+                                    </button>
+                                    <button
+                                      type="button"
+                                      className="btn btn-primary"
+                                      data-bs-dismiss="modal"
+                                      onClick={async () => {
+                                        const res = await staffStatus(
+                                          modalDetails?._id,
+                                          2,
+                                          userDets?.role,
+                                          modalDetails?.noOfDays,
+                                          userDets?.staffName
+                                        );
+                                        if (res) {
                                           setuserChange(!userChange);
                                           toast.info("Declined");
-                                        }}
-                                      >
-                                        Decline
-                                      </button>
-                                    </div>
+                                        } else {
+                                          toast.danger("Internal server error");
+                                        }
+                                      }}
+                                    >
+                                      Decline
+                                    </button>
                                   </div>
                                 </div>
                               </div>
-                            </td>
-                          </>
-                        )}
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </>
-            )}
-          </Table>
-        </div>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </>
+              ) : (
+                <>
+                  <tbody>
+                    {[...requestesForHodArr].reverse().map((leaveReq) => {
+                      return (
+                        <tr key={leaveReq._id}>
+                          {leaveReq.userId !== userDets._id && (
+                            <>
+                              <td className="center">{leaveReq.designation}</td>
+                              <td className="center">{leaveReq.name}</td>
+                              <td className="center">{leaveReq.subject}</td>
+                              <td className="center">
+                                {new Date(
+                                  leaveReq.dateStart
+                                ).toLocaleDateString()}
+                              </td>
+                              <td className="center">
+                                {new Date(
+                                  leaveReq.dateEnd
+                                ).toLocaleDateString()}
+                              </td>
+                              <td
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-around",
+                                  cursor: "pointer",
+                                }}
+                              >
+                                {leaveReq.byHod === 0 ? (
+                                  <button
+                                    type="button"
+                                    // ref={ref}
+                                    className="btn btn-primary "
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#aaa"
+                                    onClick={() => populateModal(leaveReq)}
+                                  >
+                                    View
+                                  </button>
+                                ) : (
+                                  <span>
+                                    {leaveReq.byHod === 1 ? (
+                                      <span className="text-success">
+                                        Accepted
+                                      </span>
+                                    ) : (
+                                      <span className="text-danger">
+                                        Declined
+                                      </span>
+                                    )}
+                                  </span>
+                                )}
+                                <div
+                                  className="modal fade"
+                                  id="aaa"
+                                  tabIndex="-1"
+                                  aria-labelledby="exampleModalLabel"
+                                  aria-hidden="true"
+                                >
+                                  <div className="modal-dialog">
+                                    <div className="modal-content">
+                                      <div className="modal-header">
+                                        <h5
+                                          className="modal-title"
+                                          id="exampleModalLabel"
+                                        >
+                                          Leave request details
+                                        </h5>
+                                        <button
+                                          type="button"
+                                          className="btn-close"
+                                          data-bs-dismiss="modal"
+                                          aria-label="Close"
+                                        ></button>
+                                      </div>
+                                      <div className="modal-body">
+                                        <h5>
+                                          Name:<span>{modalDetails?.name}</span>
+                                        </h5>
+                                        <h5>
+                                          Subject:
+                                          <span>{modalDetails?.subject}</span>
+                                        </h5>
+                                        <h5>
+                                          Description:
+                                          <span>{modalDetails?.body}</span>
+                                        </h5>
+                                        <h5>
+                                          From:
+                                          <span>
+                                            {new Date(
+                                              modalDetails?.dateStart
+                                            ).toDateString()}
+                                          </span>
+                                        </h5>
+                                        <h5>
+                                          To:
+                                          <span>
+                                            {new Date(
+                                              modalDetails?.dateEnd
+                                            ).toDateString()}
+                                          </span>
+                                        </h5>
+                                      </div>
+                                      <div className="modal-footer">
+                                        <button
+                                          type="button"
+                                          className="btn btn-secondary"
+                                          data-bs-dismiss="modal"
+                                          onClick={() => {
+                                            staffStatus(
+                                              modalDetails._id,
+                                              1,
+                                              userDets?.role,
+                                              modalDetails?.noOfDays,
+                                              userDets?.staffName
+                                            );
+                                            setuserChange(!userChange);
+                                            toast.info("Accepted");
+                                          }}
+                                        >
+                                          Accept
+                                        </button>
+                                        <button
+                                          type="button"
+                                          className="btn btn-primary"
+                                          data-bs-dismiss="modal"
+                                          onClick={() => {
+                                            staffStatus(
+                                              modalDetails._id,
+                                              2,
+                                              userDets?.role,
+                                              modalDetails?.noOfDays,
+                                              userDets?.staffName
+                                            );
+                                            setuserChange(!userChange);
+                                            toast.info("Declined");
+                                          }}
+                                        >
+                                          Decline
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+                            </>
+                          )}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </>
+              )}
+            </Table>
+          </div>
+        </>
       ) : (
         <div
           className="card"
