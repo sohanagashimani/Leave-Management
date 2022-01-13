@@ -30,7 +30,7 @@ function LeaveRequest() {
     allLeavesArr,
   } = userContext;
   useEffect(() => {
-    if (userDets?.role === "Admin") {
+    if (userDets?.role === "Admin" || !userDets?.role) {
       navigate("/login");
     }
     // eslint-disable-next-line
