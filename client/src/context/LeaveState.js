@@ -13,9 +13,7 @@ function LeaveState(props) {
 
   const getusers = async () => {
     try {
-      const users = await axios.get(
-        "http://localhost:4000/api/staff/fetchusers"
-      );
+      const users = await axios.get("api/staff/fetchusers");
       // console.log(users);
       setuserArr(users.data);
       return users.data;
@@ -25,7 +23,7 @@ function LeaveState(props) {
   };
   const postLeaveDetails = async (leave) => {
     try {
-      const json = await axios.post("http://localhost:4000/api/leave/", leave);
+      const json = await axios.post("api/leave/", leave);
 
       return json.data;
     } catch (error) {
@@ -35,7 +33,7 @@ function LeaveState(props) {
   const staffStatus = async (leaveId, status, role, leaveCount, staffName) => {
     try {
       const json = await axios.put(
-        `http://localhost:4000/api/leave/${leaveId}/${status}/${role}/${leaveCount}/${staffName}`
+        `api/leave/${leaveId}/${status}/${role}/${leaveCount}/${staffName}`
       );
       return json.data;
     } catch (error) {
@@ -44,7 +42,7 @@ function LeaveState(props) {
   };
   const deleteUser = async (id) => {
     try {
-      const json = await axios.delete(`http://localhost:4000/api/staff/${id}`);
+      const json = await axios.delete(`api/staff/${id}`);
 
       return json.data;
     } catch (error) {
@@ -53,7 +51,7 @@ function LeaveState(props) {
   };
   const deleteLeave = async (id) => {
     try {
-      const json = await axios.delete(`http://localhost:4000/api/leave/${id}`);
+      const json = await axios.delete(`api/leave/${id}`);
       return json.data;
     } catch (error) {
       console.log(error);
@@ -61,9 +59,7 @@ function LeaveState(props) {
   };
   const recievedRequests = async (staffname) => {
     try {
-      const recievedLeave = await axios.get(
-        `http://localhost:4000/api/leave/staff/${staffname}`
-      );
+      const recievedLeave = await axios.get(`api/leave/staff/${staffname}`);
       setRecievedLeaveArr(recievedLeave.data);
     } catch (error) {
       console.log(error);
@@ -71,9 +67,7 @@ function LeaveState(props) {
   };
   const myRequestedLeaves = async (userId) => {
     try {
-      const requestedLeaves = await axios.get(
-        `http://localhost:4000/api/leave/${userId}`
-      );
+      const requestedLeaves = await axios.get(`api/leave/${userId}`);
       // console.log(requestedLeaves,"saddsd");
       setRequestedLeavesArr(requestedLeaves.data);
     } catch (error) {
@@ -82,9 +76,7 @@ function LeaveState(props) {
   };
   const requestesForHod = async (dep) => {
     try {
-      const reqsForHod = await axios.get(
-        `http://localhost:4000/api/leave/hod/${dep}`
-      );
+      const reqsForHod = await axios.get(`api/leave/hod/${dep}`);
       setRequestesForHodArr(reqsForHod.data);
     } catch (error) {
       console.log(error);
@@ -92,9 +84,7 @@ function LeaveState(props) {
   };
   const requestsForAdmin = async () => {
     try {
-      const reqsForPrincipal = await axios.get(
-        `http://localhost:4000/api/leave/`
-      );
+      const reqsForPrincipal = await axios.get(`api/leave/`);
       setRequestsForAdminArr(reqsForPrincipal.data);
     } catch (error) {
       console.log(error);
@@ -102,15 +92,11 @@ function LeaveState(props) {
   };
   const login = async (userDetails) => {
     try {
-      const loggedUser = await axios.post(
-        "http://localhost:4000/api/auth/login",
-        userDetails,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const loggedUser = await axios.post("api/auth/login", userDetails, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       localStorage.setItem("storedUser", JSON.stringify(loggedUser.data));
       return loggedUser.data;
     } catch (err) {
@@ -119,9 +105,7 @@ function LeaveState(props) {
   };
   const getAllLeaves = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:4000/api/leave/principal/allLeaves`
-      );
+      const res = await axios.get(`api/leave/principal/allLeaves`);
       setallLeavesArr(res.data);
     } catch (err) {
       console.log(err);

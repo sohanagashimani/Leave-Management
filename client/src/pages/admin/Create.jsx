@@ -97,10 +97,7 @@ function Create() {
       return;
 
     try {
-      const json = await axios.post(
-        "http://localhost:4000/api/auth/register",
-        user
-      );
+      const json = await axios.post("api/auth/register", user);
 
       if (json.data.success) {
         toast.success("User successfully created");
