@@ -331,8 +331,8 @@ function LeaveRequest() {
       {userDets?.role !== "Principal" ? (
         <>
           <div className="recievedRequests" style={{ overflowX: "auto" }}>
-          <h1>Substitution requests</h1>
-          <div></div>
+            <h1>Substitution requests</h1>
+            <div></div>
             <Table striped bordered hover>
               <thead>
                 <tr>

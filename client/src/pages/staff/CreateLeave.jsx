@@ -87,7 +87,7 @@ function CreateLeave() {
   }, [userChange]);
   const userContext = useContext(LeaveContext);
   const { userArr, getusers, postLeaveDetails } = userContext;
-
+  console.log(leaveData);
   const sendLeaveDetails = async (e) => {
     e.preventDefault();
     setFormErrors(validate(leaveData));
@@ -97,7 +97,8 @@ function CreateLeave() {
         leaveData.body &&
         leaveData.type &&
         leaveData.dateStart &&
-        leaveData.dateEnd
+        leaveData.dateEnd &&
+        leaveData.subStaffArr.length !== 0
       )
     )
       return;
@@ -129,6 +130,9 @@ function CreateLeave() {
     }
     if (!values.dateEnd) {
       errors.dateEnd = "End date is required";
+    }
+    if (values.subStaffArr.length === 0) {
+      errors.subStaffArr = "Select atleat one substitute staff";
     }
     return errors;
   };
@@ -263,6 +267,8 @@ function CreateLeave() {
             hasSelectAll={false}
             onChange={setSelected}
           />
+          <p className="text-danger">{formErrors.subStaffArr}</p>
+
           <Button
             variant="primary"
             disabled={isSubmitDisabled}
