@@ -11,7 +11,7 @@ router.post(
     body("phnumber", "Enter a valid phone-number").isMobilePhone(),
     body("staffName", "Enter a valid name").isLength({ min: 3 }),
     body("password", "Enter a valid password").isLength({ min: 3 }),
-    body("designation", "Enter a valid designation").isLength({ min: 3 }),
+    body("designation", "Enter a valid designation").isLength({ min: 2 }),
     body("staffId", "Enter a valid staffId").isLength({ min: 1 }),
     body("joiningDate", "Enter a valid date").notEmpty(),
   ],
