@@ -56,17 +56,6 @@ function LeaveRequest() {
     getAllLeaves();
     // eslint-disable-next-line
   }, []);
-  let count = 0;
-  const populateModal = (modalDeets) => {
-    setModalDetails(modalDeets);
-  };
-  const populateSubStaffDetailsModal = (leaveReq) => {
-    setLeaveReqSubStaffDetails(leaveReq.subStaffArr);
-  };
-
-  const populateDetailedView = (leaveReq) => {
-    setDetailedLeaveReq(leaveReq);
-  };
   const todaysDate = new Date();
 
   let updatedArr = [];
@@ -81,6 +70,18 @@ function LeaveRequest() {
       updatedArr.push(leave);
     }
   });
+  let count = 0;
+  const populateModal = (modalDeets) => {
+    setModalDetails(modalDeets);
+  };
+  const populateSubStaffDetailsModal = (leaveReq) => {
+    setLeaveReqSubStaffDetails(leaveReq.subStaffArr);
+  };
+
+  const populateDetailedView = (leaveReq) => {
+    setDetailedLeaveReq(leaveReq);
+  };
+ 
 
   return (
     <div className="leaveReqDiv">
@@ -91,7 +92,7 @@ function LeaveRequest() {
             <thead>
               <tr className="theads">
                 <th>S.No</th>
-                <th>Subject</th>
+                <th>Type</th>
                 <th>From</th>
                 <th>To</th>
                 <th>Staff-status</th>
@@ -108,7 +109,7 @@ function LeaveRequest() {
                 return (
                   <tr className="theads" key={leaveReq._id}>
                     <td>{(count += 1)}</td>
-                    <td>{leaveReq.subject}</td>
+                    <td>{leaveReq.type}</td>
                     <td>{new Date(leaveReq.dateStart).toLocaleDateString()}</td>
                     <td>{new Date(leaveReq.dateEnd).toLocaleDateString()}</td>
                     <td>
@@ -338,7 +339,7 @@ function LeaveRequest() {
                 <tr>
                   <th>Designation</th>
                   <th>Name</th>
-                  <th>Subject</th>
+                  <th>Type</th>
                   <th>Start date</th>
                   <th>End date</th>
                   <th>Accept/Decline</th>
@@ -353,7 +354,7 @@ function LeaveRequest() {
                         <tr key={leaveReq._id}>
                           <td className="center">{leaveReq.designation}</td>
                           <td className="center">{leaveReq.name}</td>
-                          <td className="center">{leaveReq.subject}</td>
+                          <td className="center">{leaveReq.type}</td>
                           <td className="center">
                             {new Date(leaveReq.dateStart).toLocaleDateString()}
                           </td>
@@ -451,6 +452,10 @@ function LeaveRequest() {
                                         ).toDateString()}
                                       </span>
                                     </h5>
+                                    <h5>
+                                      No. of days:
+                                      <span>{modalDetails?.noOfDays}</span>
+                                    </h5>
                                   </div>
                                   <div className="modal-footer">
                                     <button
@@ -517,7 +522,7 @@ function LeaveRequest() {
                             <>
                               <td className="center">{leaveReq.designation}</td>
                               <td className="center">{leaveReq.name}</td>
-                              <td className="center">{leaveReq.subject}</td>
+                              <td className="center">{leaveReq.type}</td>
                               <td className="center">
                                 {new Date(
                                   leaveReq.dateStart
@@ -609,6 +614,10 @@ function LeaveRequest() {
                                               modalDetails?.dateEnd
                                             ).toDateString()}
                                           </span>
+                                        </h5>
+                                        <h5>
+                                          No. of days:
+                                          <span>{modalDetails?.noOfDays}</span>
                                         </h5>
                                       </div>
                                       <div className="modal-footer">

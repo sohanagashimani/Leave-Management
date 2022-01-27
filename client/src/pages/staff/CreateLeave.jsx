@@ -49,15 +49,10 @@ function CreateLeave() {
       setIsEndDateDisabled(true);
     }
 
-    if (userDets.type === "Regular") {
+    if (userDets?.type === "Regular") {
       if (
         leaveData.type === "Casual" &&
         totalLeaveDays > userDets.regularStaffLeaves
-      ) {
-        setisSubmitDisabled(true);
-      } else if (
-        leaveData.type === "Earned" &&
-        totalLeaveDays > userDets.earnedLeaves
       ) {
         setisSubmitDisabled(true);
       } else {
@@ -87,7 +82,7 @@ function CreateLeave() {
   }, [userChange]);
   const userContext = useContext(LeaveContext);
   const { userArr, getusers, postLeaveDetails } = userContext;
-  console.log(leaveData);
+ 
   const sendLeaveDetails = async (e) => {
     e.preventDefault();
     setFormErrors(validate(leaveData));
@@ -132,7 +127,7 @@ function CreateLeave() {
       errors.dateEnd = "End date is required";
     }
     if (values.subStaffArr.length === 0) {
-      errors.subStaffArr = "Select atleat one substitute staff";
+      errors.subStaffArr = "Select atleast one substitute staff";
     }
     return errors;
   };
@@ -226,11 +221,6 @@ function CreateLeave() {
               required
               <option value={"Duty"}>Duty</option>
               <option value={"Casual"}>Casual</option>
-              {userDets.type === "Regular" ? (
-                <option value={"Earned"}>Earned</option>
-              ) : (
-                ""
-              )}
             </Form.Select>
             <p className="text-danger">{formErrors.type}</p>
           </FloatingLabel>

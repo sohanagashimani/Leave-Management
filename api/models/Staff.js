@@ -46,7 +46,6 @@ const staffSchema = new mongoose.Schema(
       required: true,
     },
     regularStaffLeaves: { type: Number, default: 12 },
-    earnedLeaves: { type: Number, default: 0 },
     probationStaffLeaves: { type: Number, default: 0 },
     joiningDate: {
       type: Date,

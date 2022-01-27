@@ -416,7 +416,7 @@ function Create() {
                         <td>
                           {user.type === "Regular" ? (
                             <span>
-                              {user.earnedLeaves + user.regularStaffLeaves}
+                              {user.regularStaffLeaves}
                             </span>
                           ) : (
                             <span>{user.probationStaffLeaves}</span>

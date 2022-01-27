@@ -28,7 +28,6 @@
 }
 .leaveReqDiv {
   display: flex;
-  flex-wrap: wrap;
   flex-direction: row;
   /* gap: 0rem 30rem; */
   justify-content: space-between;
@@ -96,6 +95,11 @@
     width: 50rem;
   }
 }
+@media only screen and (max-width: 952px) {
+  .leaveReqDiv {
+    flex-wrap: wrap;
+  }
+}
 
 @media only screen and (max-width: 1099px) {
   .helloNav {
@@ -121,5 +125,13 @@
 @media only screen and (max-width: 430px) {
   .leaveForm {
     width: 21rem;
+  }
+}
+@media only screen and (min-width: 1960px) {
+  .myRequests {
+    width: 150rem;
+  }
+  .recievedRequests {
+    width: 150rem;
   }
 }

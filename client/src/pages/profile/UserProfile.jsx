@@ -53,12 +53,8 @@ function UserProfile() {
             ) : (
               <>
                 <Card.Title>
-                  <strong>Regular leaves remaining</strong>:{" "}
+                  <strong>Leaves remaining</strong>:{" "}
                   {userDets?.regularStaffLeaves}
-                </Card.Title>
-                <Card.Title>
-                  <strong>Earned leaves remaining</strong>:{" "}
-                  {userDets?.earnedLeaves}
                 </Card.Title>
               </>
             )}

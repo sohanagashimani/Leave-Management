@@ -38,7 +38,7 @@ function Hodrequests() {
             <tr className="theads">
               <th>Designation</th>
               <th>Full Name</th>
-              <th>Subject</th>
+              <th>Type</th>
               <th>Start date</th>
               <th>End date</th>
               <th>Accept/Decline</th>
@@ -50,7 +50,7 @@ function Hodrequests() {
                 <tr key={leaveReq._id}>
                   <td className="center">{leaveReq.designation}</td>
                   <td className="center">{leaveReq.name}</td>
-                  <td className="center">{leaveReq.subject}</td>
+                  <td className="center">{leaveReq.type}</td>
                   <td className="center">
                     {new Date(leaveReq.dateStart).toDateString()}
                   </td>
