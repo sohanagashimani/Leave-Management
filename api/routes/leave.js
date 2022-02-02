@@ -149,7 +149,53 @@ router.put(
   async (req, res) => {
     try {
       // console.log(req.params.role);
-      if (req.params.role === "Staff") {
+      if (req.params.role === "Staff" || req.params.role === "Hod") {
+        if (req.params.role === "Hod") {
+          const leave = await Leave.findByIdAndUpdate(req.params.leaveId, {
+            byHod: req.params.byStaff,
+          });
+          res.status(200).json("leave status provided by Hod");
+          const leaveStatus = await Leave.findById(req.params.leaveId);
+          const userId = await leaveStatus.userId;
+          const user = await Staff.findById(userId);
+          if (leaveStatus.byHod === 1) {
+            // send mail with defined transport object
+            let info = await transporter.sendMail({
+              from: `"Jain College of Engineering" leavems@jainbgm.in`, // sender address
+              to: `${user.email}`, // list of receivers
+              subject: `Leave Request Approved`, // Subject line
+              html: `<p><span>Your leave request has been <b style="color: green;">Approved</b> by HOD.</span><br> Visit <a href="#"
+              style="text-decoration: none;color: blue;">Leave-management software</a> for further details.</p>`, // html body
+            });
+            console.log("Message sent: %s", info.messageId);
+          } else if (leaveStatus.byHod === 2) {
+            // send mail with defined transport object
+            let info = await transporter.sendMail({
+              from: `"Jain College of Engineering" leavems@jainbgm.in`, // sender address
+              to: `${user.email}`, // list of receivers
+              subject: `Leave Request Declined`, // Subject line
+              html: `<p><span>Your leave request has been <b style="color: red;">Declined</b>.</span><br> Visit <a href="#"
+              style="text-decoration: none;color: blue;">Leave-management software</a> for further details.</p>`, // html body
+            });
+            console.log("Message sent: %s", info.messageId);
+          }
+          if (leaveStatus.byHod === 1 && leaveStatus.type === "Casual") {
+            if (user.type === "Regular") {
+              const updatedLeaves =
+                user.regularStaffLeaves - req.params.leaveCount;
+              // console.log(updatedLeaves)
+              await Staff.findByIdAndUpdate(user._id, {
+                regularStaffLeaves: updatedLeaves,
+              });
+            } else {
+              const updatedLeaves =
+                user.probationStaffLeaves - req.params.leaveCount;
+              await Staff.findByIdAndUpdate(user._id, {
+                probationStaffLeaves: updatedLeaves,
+              });
+            }
+          }
+        }
         const leave = await Leave.findById(req.params.leaveId);
         // console.log(leave);
         leave.subStaffArr.map((user) => {
@@ -160,7 +206,9 @@ router.put(
         await Leave.findByIdAndUpdate(req.params.leaveId, {
           subStaffArr: leave.subStaffArr,
         });
-        res.status(200).json("leave status provided");
+
+        res.status(200).json("leave status provided by Staff");
+
         const user = await Staff.findOne({ staffName: req.params.staffName });
         const userRole = await Staff.findById(leave.userId);
         const hod = await Staff.findOne({
@@ -227,51 +275,6 @@ router.put(
         await Leave.findByIdAndUpdate(req.params.leaveId, {
           byStaff: byStaffApproval,
         });
-      } else if (req.params.role === "Hod") {
-        const leave = await Leave.findByIdAndUpdate(req.params.leaveId, {
-          byHod: req.params.byStaff,
-        });
-        res.status(200).json("leave status approved");
-        const leaveStatus = await Leave.findById(req.params.leaveId);
-        const userId = await leaveStatus.userId;
-        const user = await Staff.findById(userId);
-        if (leaveStatus.byHod === 1) {
-          // send mail with defined transport object
-          let info = await transporter.sendMail({
-            from: `"Jain College of Engineering" leavems@jainbgm.in`, // sender address
-            to: `${user.email}`, // list of receivers
-            subject: `Leave Request Approved`, // Subject line
-            html: `<p><span>Your leave request has been <b style="color: green;">Approved</b>.</span><br> Visit <a href="#"
-            style="text-decoration: none;color: blue;">Leave-management software</a> for further details.</p>`, // html body
-          });
-          console.log("Message sent: %s", info.messageId);
-        } else if (leaveStatus.byHod === 2) {
-          // send mail with defined transport object
-          let info = await transporter.sendMail({
-            from: `"Jain College of Engineering" leavems@jainbgm.in`, // sender address
-            to: `${user.email}`, // list of receivers
-            subject: `Leave Request Declined`, // Subject line
-            html: `<p><span>Your leave request has been <b style="color: red;">Declined</b>.</span><br> Visit <a href="#"
-            style="text-decoration: none;color: blue;">Leave-management software</a> for further details.</p>`, // html body
-          });
-          console.log("Message sent: %s", info.messageId);
-        }
-        if (leaveStatus.byHod === 1 && leaveStatus.type === "Casual") {
-          if (user.type === "Regular") {
-            const updatedLeaves =
-              user.regularStaffLeaves - req.params.leaveCount;
-            // console.log(updatedLeaves)
-            await Staff.findByIdAndUpdate(user._id, {
-              regularStaffLeaves: updatedLeaves,
-            });
-          } else {
-            const updatedLeaves =
-              user.probationStaffLeaves - req.params.leaveCount;
-            await Staff.findByIdAndUpdate(user._id, {
-              probationStaffLeaves: updatedLeaves,
-            });
-          }
-        }
       } else if (req.params.role === "Admin") {
         await Leave.findByIdAndUpdate(req.params.leaveId, {
           byAdmin: req.params.byStaff,
@@ -342,7 +345,6 @@ router.get("/principal/allLeaves", async (req, res) => {
     const allLeaves = await Leave.find({ $or: [{ byAdmin: 1 }, { byHod: 1 }] });
     return res.status(200).json(allLeaves);
   } catch (err) {
-    console.log(res.status);
     return res.status(500).json(err);
   }
 });

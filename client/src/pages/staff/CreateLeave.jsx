@@ -82,7 +82,7 @@ function CreateLeave() {
   }, [userChange]);
   const userContext = useContext(LeaveContext);
   const { userArr, getusers, postLeaveDetails } = userContext;
- 
+
   const sendLeaveDetails = async (e) => {
     e.preventDefault();
     setFormErrors(validate(leaveData));
@@ -144,7 +144,11 @@ function CreateLeave() {
   };
 
   const filteredArr = userArr.filter(
-    (user) => user?.role === "Staff" && user?.staffName !== userDets?.staffName
+    (user) =>
+      user?.role !== "Principal" &&
+      user?.role !== "Admin" &&
+      user?.staffName !== userDets?.staffName &&
+      user?.department === userDets?.department
   );
   const clearFields = (e) => {
     Array.from(e.target).forEach((e) => (e.value = ""));

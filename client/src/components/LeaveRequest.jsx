@@ -44,16 +44,26 @@ function LeaveRequest() {
     ) {
       myRequestedLeaves(userDets?._id);
     }
-    if (userDets?.role === "Staff") {
-      recievedRequests(userDets?.staffName);
-    } else if (userDets?.role === "Hod") {
+    if (userDets?.role === "Hod") {
       requestesForHod(userDets?.department);
+      recievedRequests(userDets?.staffName);
+    } else if (userDets?.role === "Staff") {
+      console.log(userDets.staffName);
+      recievedRequests(userDets?.staffName);
     }
 
     // eslint-disable-next-line
   }, [userChange]);
+  const updatedHodArr = [...requestesForHodArr, ...recievedLeaveArr];
+  const uniqueArr = [
+    ...updatedHodArr
+      .reduce((map, obj) => map.set(obj._id, obj), new Map())
+      .values(),
+  ];
+  console.log(uniqueArr);
+
   useEffect(() => {
-    getAllLeaves();
+    if (userDets?.role === "Principal") getAllLeaves();
     // eslint-disable-next-line
   }, []);
   const todaysDate = new Date();
@@ -77,11 +87,9 @@ function LeaveRequest() {
   const populateSubStaffDetailsModal = (leaveReq) => {
     setLeaveReqSubStaffDetails(leaveReq.subStaffArr);
   };
-
   const populateDetailedView = (leaveReq) => {
     setDetailedLeaveReq(leaveReq);
   };
- 
 
   return (
     <div className="leaveReqDiv">
@@ -515,7 +523,7 @@ function LeaveRequest() {
               ) : (
                 <>
                   <tbody>
-                    {[...requestesForHodArr].reverse().map((leaveReq) => {
+                    {[...uniqueArr].reverse().map((leaveReq) => {
                       return (
                         <tr key={leaveReq._id}>
                           {leaveReq.userId !== userDets._id && (
