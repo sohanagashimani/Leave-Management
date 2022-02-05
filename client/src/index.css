@@ -90,6 +90,15 @@
   padding: 0.6rem;
   margin: auto;
 }
+.allLeavesContainer {
+  margin: 1rem 10rem 10rem 10rem;
+  padding: 1rem;
+  border: 0.1rem black solid;
+}
+.allLeavesh1 {
+  text-align: center;
+  margin-top: 1.5rem;
+}
 @media only screen and (max-width: 1602px) {
   .leaveForm {
     width: 50rem;

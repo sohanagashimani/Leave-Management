@@ -114,6 +114,11 @@ function NavBar() {
                   View Staff
                 </Nav.Link>
               )}
+              {userDets?.role === "Admin" && (
+                <Nav.Link as={NavLink} to={"/allLeaves"}>
+                  View Staff Leaves
+                </Nav.Link>
+              )}
             </Nav>
             <strong className="navbar-text mx-2 helloNav">
               Hello, {userDets?.designation}. {userDets.staffName}

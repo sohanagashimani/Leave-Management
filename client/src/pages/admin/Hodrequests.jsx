@@ -33,7 +33,7 @@ function Hodrequests() {
     <>
       <h1 className="text-center mt-4">Incoming leave applications</h1>
       <div className="container mt-3" style={{ overflowX: "auto" }}>
-        <Table striped bordered hover>
+        <Table striped bordered hover className="text-center">
           <thead>
             <tr className="theads">
               <th>Designation</th>
@@ -52,10 +52,22 @@ function Hodrequests() {
                   <td className="center">{leaveReq.name}</td>
                   <td className="center">{leaveReq.type}</td>
                   <td className="center">
-                    {new Date(leaveReq.dateStart).toDateString()}
+                    {new Date(leaveReq.dateStart)
+                      .toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })
+                      .replace(/ /g, "-")}
                   </td>
                   <td className="center">
-                    {new Date(leaveReq.dateEnd).toDateString()}
+                    {new Date(leaveReq.dateEnd)
+                      .toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })
+                      .replace(/ /g, "-")}
                   </td>
                   <td
                     style={{
@@ -120,15 +132,25 @@ function Hodrequests() {
                             <h5>
                               From:
                               <span>
-                                {new Date(
-                                  modalDetails?.dateStart
-                                ).toDateString()}
+                                {new Date(modalDetails?.dateStart)
+                                  .toLocaleDateString("en-GB", {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric",
+                                  })
+                                  .replace(/ /g, "-")}
                               </span>
                             </h5>
                             <h5>
                               To:
                               <span>
-                                {new Date(modalDetails?.dateEnd).toDateString()}
+                                {new Date(modalDetails?.dateEnd)
+                                  .toLocaleDateString("en-GB", {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric",
+                                  })
+                                  .replace(/ /g, "-")}
                               </span>
                             </h5>
                             <h5>

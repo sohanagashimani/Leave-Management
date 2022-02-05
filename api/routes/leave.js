@@ -206,8 +206,8 @@ router.put(
         await Leave.findByIdAndUpdate(req.params.leaveId, {
           subStaffArr: leave.subStaffArr,
         });
-
-        res.status(200).json("leave status provided by Staff");
+        if (req.params.role === "Staff")
+          res.status(200).json("leave status provided by Staff");
 
         const user = await Staff.findOne({ staffName: req.params.staffName });
         const userRole = await Staff.findById(leave.userId);
@@ -343,6 +343,16 @@ router.get("/staff/:staffname", async (req, res) => {
 router.get("/principal/allLeaves", async (req, res) => {
   try {
     const allLeaves = await Leave.find({ $or: [{ byAdmin: 1 }, { byHod: 1 }] });
+    return res.status(200).json(allLeaves);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+});
+
+// get all leaves irrespective of acc/dec
+router.get("/admin/allLeaves", async (req, res) => {
+  try {
+    const allLeaves = await Leave.find();
     return res.status(200).json(allLeaves);
   } catch (err) {
     return res.status(500).json(err);

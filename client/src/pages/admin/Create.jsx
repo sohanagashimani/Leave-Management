@@ -320,11 +320,11 @@ function Create() {
                   onChange={handleChange}
                 >
                   <option></option>
-
                   <option value="CSE">CSE</option>
                   <option value="ECE">ECE</option>
                   <option value="EEE">EEE</option>
-                  <option value="CIV">CIV</option>
+                  <option value="CIVIL">CIVIL</option>
+                  <option value="MECH">MECH</option>
                   <option value="PHY">PHY</option>
                   <option value="CHEM">CHEM</option>
                   <option value="MATH">MATH</option>
@@ -362,8 +362,11 @@ function Create() {
             <option className="dropdown-item" value="EEE">
               EEE
             </option>
-            <option className="dropdown-item" value="CIV">
-              CIV
+            <option className="dropdown-item" value="CIVIL">
+              CIVIL
+            </option>
+            <option className="dropdown-item" value="MECH">
+              MECH
             </option>
             <option className="dropdown-item" value="PHY">
               PHY

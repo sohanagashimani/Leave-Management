@@ -147,8 +147,7 @@ function CreateLeave() {
     (user) =>
       user?.role !== "Principal" &&
       user?.role !== "Admin" &&
-      user?.staffName !== userDets?.staffName &&
-      user?.department === userDets?.department
+      user?.staffName !== userDets?.staffName
   );
   const clearFields = (e) => {
     Array.from(e.target).forEach((e) => (e.value = ""));

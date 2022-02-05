@@ -111,6 +111,14 @@ function LeaveState(props) {
       console.log(err);
     }
   };
+  const getAllLeavesforAdmin = async () => {
+    try {
+      const res = await axios.get(`api/leave/admin/allLeaves`);
+      return res.data;
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <LeaveContext.Provider
@@ -131,6 +139,7 @@ function LeaveState(props) {
         login,
         deleteLeave,
         getAllLeaves,
+        getAllLeavesforAdmin,
         allLeavesArr,
         setuserArr,
       }}

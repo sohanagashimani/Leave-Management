@@ -118,8 +118,24 @@ function LeaveRequest() {
                   <tr className="theads" key={leaveReq._id}>
                     <td>{(count += 1)}</td>
                     <td>{leaveReq.type}</td>
-                    <td>{new Date(leaveReq.dateStart).toLocaleDateString()}</td>
-                    <td>{new Date(leaveReq.dateEnd).toLocaleDateString()}</td>
+                    <td>
+                      {new Date(leaveReq.dateStart)
+                        .toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })
+                        .replace(/ /g, "-")}
+                    </td>
+                    <td>
+                      {new Date(leaveReq.dateEnd)
+                        .toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })
+                        .replace(/ /g, "-")}
+                    </td>
                     <td>
                       {leaveReq.byStaff !== 1 && (
                         <>
@@ -364,10 +380,22 @@ function LeaveRequest() {
                           <td className="center">{leaveReq.name}</td>
                           <td className="center">{leaveReq.type}</td>
                           <td className="center">
-                            {new Date(leaveReq.dateStart).toLocaleDateString()}
+                            {new Date(leaveReq.dateStart)
+                              .toLocaleDateString("en-GB", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              })
+                              .replace(/ /g, "-")}
                           </td>
                           <td className="center">
-                            {new Date(leaveReq.dateEnd).toLocaleDateString()}
+                            {new Date(leaveReq.dateEnd)
+                              .toLocaleDateString("en-GB", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              })
+                              .replace(/ /g, "-")}
                           </td>
 
                           <td
@@ -532,14 +560,22 @@ function LeaveRequest() {
                               <td className="center">{leaveReq.name}</td>
                               <td className="center">{leaveReq.type}</td>
                               <td className="center">
-                                {new Date(
-                                  leaveReq.dateStart
-                                ).toLocaleDateString()}
+                                {new Date(leaveReq.dateStart)
+                                  .toLocaleDateString("en-GB", {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric",
+                                  })
+                                  .replace(/ /g, "-")}
                               </td>
                               <td className="center">
-                                {new Date(
-                                  leaveReq.dateEnd
-                                ).toLocaleDateString()}
+                                {new Date(leaveReq.dateEnd)
+                                  .toLocaleDateString("en-GB", {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric",
+                                  })
+                                  .replace(/ /g, "-")}
                               </td>
                               <td
                                 style={{

@@ -11,6 +11,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ViewStaff from "./pages/View Staff/ViewStaff";
 import { Slide } from "react-toastify";
+import AllLeaves from "./pages/admin/AllLeaves";
 
 function App() {
   // hello
@@ -36,6 +37,7 @@ function App() {
           <Route path="/createLeave" element={<CreateLeave />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/viewStaff" element={<ViewStaff />} />
+          <Route path="/allLeaves" element={<AllLeaves />} />
         </Routes>
       </Router>
     </>
