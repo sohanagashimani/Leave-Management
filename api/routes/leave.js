@@ -1,7 +1,9 @@
 const router = require("express").Router();
 const nodemailer = require("nodemailer");
 const Leave = require("../models/Leave");
+const dotenv = require("dotenv");
 const Staff = require("../models/Staff");
+dotenv.config();
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -9,8 +11,8 @@ const transporter = nodemailer.createTransport({
   port: 587,
   secure: false,
   auth: {
-    user: "leavems@jainbgm.in", // generated ethereal user
-    pass: "j@im1234", // generated ethereal password
+    user: process.env.user, // generated ethereal user
+    pass: process.env.pass, // generated ethereal password
   },
   tls: {
     rejectUnauthorized: false,
