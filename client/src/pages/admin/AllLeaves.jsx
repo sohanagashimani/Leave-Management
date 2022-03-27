@@ -238,7 +238,7 @@ function AllLeaves() {
                           <span className="text-success fw-bold">Approved</span>
                         )
                       )}
-                      {leaveReq.byStaff === 2 && (
+                      {leaveReq.byStaff === 2 && leaveReq.byHod !== 1 && (
                         <span className="text-danger fw-bold">Declined</span>
                       )}
                       {leaveReq.byHod === 2 ? (
